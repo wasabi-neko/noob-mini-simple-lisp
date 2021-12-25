@@ -14,3 +14,11 @@ $(LEX): $(YACC)
 
 $(EXEC): $(LEX) $(YACC)
 	gcc -o nmsl yacc.tab.o lex.yy.o -ll
+
+clean:
+	rm lex.yy.c
+	rm yacc.tab.c
+	rm yacc.tab.h
+	rm $(YACC)
+	rm $(LEX)
+	rm nmsl
