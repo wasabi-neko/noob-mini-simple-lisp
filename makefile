@@ -1,24 +1,26 @@
-YACC := yacc.tab.o
-LEX	:= lex.yy.o
-EXEC := nmsl
+yacc     := src/yacc.y
+parser_c := compiled-c/yacc.tab.c
+parser_h := compiled-h/yacc.tab.h
+parser_o := bin/yacc.tab.o
+lex := src/lex.l
+scanner_c := compiled-c/lex.yy.c
+scanner_o := bin/lex.yy.o
+exec := bin/nmsl
 
-all: $(EXEC)
+all: $(exec)
 
-$(YACC):
-	bison -d -o yacc.tab.c yacc.y
-	gcc -c -g -I .. yacc.tab.c
+$(parser_o):
+	bison -d -o $(parser_c) $(yacc)
+	gcc -c -g -I .. -o $(parser_o) $(parser_c)
 
-$(LEX): $(YACC)
-	flex -o lex.yy.c lex.l
-	gcc -c -g -I .. lex.yy.c
+$(scanner_o): $(parser_o)
+	flex -o $(scanner_c) $(lex)
+	gcc -c -g -I .. -o $(scanner_o) $(scanner_c)
 
-$(EXEC): $(LEX) $(YACC)
-	gcc -o nmsl yacc.tab.o lex.yy.o -ll
+$(exec): $(scanner_o) $(parser_o)
+	gcc -o $(exec) $(scanner_o) $(parser_o) -ll
 
 clean:
-	rm lex.yy.c
-	rm yacc.tab.c
-	rm yacc.tab.h
-	rm $(YACC)
-	rm $(LEX)
-	rm nmsl
+	rm bin/*
+	rm compiled-c/*
+	rm $(exec)

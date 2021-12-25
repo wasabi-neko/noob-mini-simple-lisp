@@ -1,4 +1,6 @@
 nmsl
+bin/*
+compiled-c/*
 *.o
 yacc.tab.c
 yacc.tab.h
