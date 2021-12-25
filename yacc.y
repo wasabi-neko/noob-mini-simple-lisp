@@ -17,6 +17,10 @@ void yyerror(const char *msg);
 %token BOOL_VAL
 %token ID
 
+%token IF
+%token FUN
+%token DEFINE
+
 %token PRINT_NUM
 %token PRINT_BOOL
 
@@ -31,42 +35,38 @@ void yyerror(const char *msg);
 %token AND
 %token OR
 
-%token IF
-%token FUN
-%token DEFINE
-
 %%
-// MAIN
-program : stmts
-        ;
-stmts   : stmt stmts
-        |
-        ;
-stmt    : expr
-        | def_stmt
-        | print_stmt
+program : exprs
         ;
 
-// PRINT
-print_stmt : '(' PRINT_NUM expr ')'
-        | '(' PRINT_BOOL expr ')'
-        ;
-
-// EXP
 exprs   : expr exprs
         |
         ;
-expr    : INT_VAL
-        | BOOL_VAL
-        | var_name
-        | fun_expr
-        | if_expr
-        | fun_call
-        | '(' operator exprs ')'
+expr    : single_val
+        | '(' func_name exprs')'
         ;
 
-if_expr : '(' IF expr expr expr ')'
-        ;
+single_val : INT_VAL
+           | BOOL_VAL
+           | var_name
+           ;
+
+var_name   : ID
+           ;
+
+func_name : keyword
+          | buildin_func
+          | operator
+          | var_name
+          ;
+
+keyword      : IF
+             | DEFINE
+             | FUN
+             ;
+buildin_func : PRINT_NUM
+             | PRINT_BOOL
+             ;
 
 operator  : '+'
           | '-'
@@ -78,28 +78,6 @@ operator  : '+'
           | '='
           | AND
           | OR
-          ;
-
-// Define
-def_stmt : '(' DEFINE var_name expr ')'
-         ;
-var_name : ID
-         ;
-
-// Function
-fun_expr  : '(' FUN fun_param fun_body ')'
-          ;
-fun_param : '(' ids ')'
-          ;
-ids       : ID ids
-          |
-          ;
-fun_body  : exprs
-          ;
-fun_call  : '(' var_name params ')'
-          | '(' fun_expr params ')'
-          ;
-params    : exprs
           ;
 
 %%
