@@ -24,3 +24,6 @@ clean:
 	rm bin/*
 	rm compiled-c/*
 	rm $(exec)
+
+test: $(exec)
+	./bin/nmsl < ./test/test1.lisp
