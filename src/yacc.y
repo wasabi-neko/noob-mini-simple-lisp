@@ -7,19 +7,23 @@ extern "C" {
 #include <stdio.h>
 #include <string.h>
 #include "type.hh"
+#include "AST.hh"
 
 void yyerror(const char *msg);
 %}
 
 %union {
+    bool bval;
+    int ival;
     char *str;
+    AST_node *node;
 }
 
 %token '('
 %token ')'
 
-%token INT_VAL
-%token BOOL_VAL
+%token <ival> INT_VAL
+%token <bval> BOOL_VAL
 %token <str> ID
 
 %token IF
@@ -40,8 +44,14 @@ void yyerror(const char *msg);
 %token AND
 %token OR
 
-%type <str> func_name
-%type <str> var_name
+%type <node> exprs 
+%type <node> expr
+%type <node> single_val
+%type <node> func_name
+%type <node> var_name
+%type <node> keyword
+%type <node> buildin_func
+%type <node> operator
 
 %%
 program : exprs
@@ -62,11 +72,11 @@ single_val : INT_VAL
 var_name   : ID {printf("var: %s\n", $1); $$ = $1;}
            ;
 
-func_name : keyword     {$$ = "key";}
-          | buildin_func {$$ = "buildin_func";}
-          | operator {$$ = "op";}
-          | var_name    {$$ = $1;}
-          ;
+func_name  : keyword     {$$ = "key";}
+           | buildin_func {$$ = "buildin_func";}
+           | operator {$$ = "op";}
+           | var_name    {$$ = $1;}
+           ;
 
 keyword      : IF
              | DEFINE
@@ -76,17 +86,17 @@ buildin_func : PRINT_NUM
              | PRINT_BOOL
              ;
 
-operator  : '+'
-          | '-'
-          | '*'
-          | '/'
-          | MOD
-          | '>'
-          | '<'
-          | '='
-          | AND
-          | OR
-          ;
+operator     : '+'
+             | '-'
+             | '*'
+             | '/'
+             | MOD
+             | '>'
+             | '<'
+             | '='
+             | AND
+             | OR
+             ;
 
 %%
 

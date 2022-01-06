@@ -14,3 +14,7 @@ make all
 ## About mini-lisp
 
 mini-lisp a very small subset of lisp languages which is a good practice target for a noob like me.
+
+## Problems
+
+- How do i implement GC?
