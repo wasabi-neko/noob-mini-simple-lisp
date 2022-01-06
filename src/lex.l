@@ -1,5 +1,11 @@
 %{
-#include "yacc.tab.h"
+extern "C" {
+    int yylex();
+}
+#include "yacc.tab.hh"
+
+size_t line_count = 0;
+size_t col_count = 0;
 %}
 
 digit [0-9]+
@@ -28,7 +34,8 @@ print-bool {return PRINT_BOOL;}
 if {return IF;}
 lambda {return FUN;}
 define {return DEFINE;}
-{letter}({letter}|digit|\-)* {return ID;}
-.   ;
-\n  ;
+{letter}({letter}|digit|\-)* {yylval.str = (char*)malloc(yyleng+1); strcpy(yylval.str, yytext); yylval.str[yyleng] = '\0'; return ID;}
+
+.   {col_count++;};
+\n  {line_count++;};
 %%
