@@ -15,7 +15,7 @@ typedef struct AST_NODE {
     struct AST_NODE *child;
 } AST_node;
 
-AST_node *new_ast_node(var_t val);
+AST_node *new_ast_node(char* name, var_t val);
 void free_ast_node(AST_node *node);
 void add_child(AST_node *root, AST_node *child);
 void append_next(AST_node *root, AST_node *child);
