@@ -29,7 +29,9 @@ typedef union LISP_VAR_TYPE{
     void *lisp_ptr;
 } var_t;
 
+void set_var_val(var_t *, enum var_types);
 enum var_types get_type(const var_t);
+bool type_check(const var_t);
 int get_int_val(const var_t);
 bool get_bool_val(const var_t);
 func_t *get_func_ptr(const var_t);
