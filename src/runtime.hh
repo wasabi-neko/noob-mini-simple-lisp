@@ -1,3 +1,6 @@
+#ifndef INCLUDE_RUNTIME_HH
+#define INCLUDE_RUNTIME_HH
+
 #include "type.hh"
 
 #define RUNTIME_STACK_SIZE_MAX 10000
@@ -50,3 +53,5 @@ const func_t list_native_minus {
     .argc = -1,
     .body.native_body = _lisp_native_minus_
 };
+
+#endif

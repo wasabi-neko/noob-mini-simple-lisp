@@ -1,3 +1,6 @@
+#ifndef INCLUDE_TYPE_HH
+#define INCLUDE_TYPE_HH
+
 #include <map>
 #include <string>
 
@@ -49,3 +52,4 @@ func_t *new_func(char *name);
 void free_func(func_t *);
 void evoke_func(func_t *, int argc, env_t *env);
 
+#endif

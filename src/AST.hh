@@ -1,3 +1,7 @@
+#ifndef INCLUDE_AST_NODE_HH
+#define INCLUDE_AST_NODE_HH
+
+
 #include "type.hh"
 
 /**
@@ -39,3 +43,5 @@ AST_node *new_ast_node(char* name, var_t val);
 void free_ast_node(AST_node *node);
 void add_child(AST_node *root, AST_node *child);
 void append_next(AST_node *root, AST_node *child);
+
+#endif
