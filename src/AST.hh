@@ -2,6 +2,26 @@
 
 /**
  * AST_NODE:
+ *   Just like lips, this AST is more like a list instead of a tree.
+ *   - everyline is a list owned by its parent.
+ *   - the child of a node is also a list.
+ *   - the child_list of a node 'N' is consider as 'N''s arguments
+ * 
+ * Example:
+ *   ```
+ *   lisp: (+ 1 a (- 2 b) 2)
+ *   
+ *   AST:
+ *   root
+ *    |
+ *   '+'
+ *    |
+ *    1 -> a -> '-' -> 2
+ *               |
+ *               2 -> b
+ *   ```
+ * 
+ * Struct Member:
  * name  {char*}     the name of this ID (if this node is an ID)
  * val   {var_t}     the value of this node (if this node is not an ID)
  * next  {AST_node*} the next AST node (the basic struct of an AST is a list)
