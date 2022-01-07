@@ -32,4 +32,4 @@ clean:
 	-rm $(EXEC)
 
 test: $(EXEC)
-	./bin/nmsl < ./test/test1.lisp
+	./$(EXEC) < ./test/test1.lisp
