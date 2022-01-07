@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -Wall -O2
+CFLAGS := -Wall -g
 
 
 yacc := yacc.y

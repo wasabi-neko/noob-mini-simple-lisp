@@ -1,4 +1,5 @@
 nmsl
+.vscode
 bin/*
 yacc.tab.cpp
 yacc.tab.hpp

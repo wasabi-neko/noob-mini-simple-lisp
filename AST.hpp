@@ -44,6 +44,7 @@ void free_ast_node(AST_node *node);
 void add_child(AST_node *root, AST_node *child);
 void append_next(AST_node *root, AST_node *child);
 
+void print_node(AST_node *node);
 void visit(AST_node *);
 
 #endif

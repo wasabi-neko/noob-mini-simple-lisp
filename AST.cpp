@@ -1,3 +1,4 @@
+#include <iostream>
 #include <string>
 #include "AST.hpp"
 
@@ -25,5 +26,33 @@ void add_child(AST_node *root, AST_node *child) {
 }
 
 void append_next(AST_node *root, AST_node *child) {
+    return;
+}
+
+void print_node(AST_node *node) {
+    if (node->name == NULL)
+        printf("NULL");
+    else
+        printf("%s", node->name->data());
+    
+    printf(", ");
+    printf("0x%016lx\n", node->val._content);
+    fflush(stdout);
+    return;
+}
+void visit(AST_node *root) {
+    if (root == NULL)
+        return;
+
+    print_node(root);
+    if (root->child != NULL) {
+        printf("go child\n");
+        visit(root->child);
+    }
+
+    if (root->name != NULL) {
+        printf("go next\n");
+        visit(root->next);
+    }
     return;
 }

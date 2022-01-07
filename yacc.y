@@ -13,6 +13,8 @@ extern "C" {
 #include "native_func.hpp"
 
 void yyerror(const char *msg);
+
+func_t lisp_main;
 %}
 
 %union {
@@ -57,14 +59,14 @@ void yyerror(const char *msg);
 %type <node> operator
 
 %%
-program : exprs
+program : exprs         {lisp_main.body.ast_body = $1;}
         ;
 
-exprs   : expr exprs
-        |
+exprs   : expr exprs    {$1->next = $2; $$ = $1;}
+        |               {$$ = NULL;}
         ;
-expr    : single_val    {printf("%d\n", $1->val.lisp_int32);}
-        | '(' func_name exprs ')' 
+expr    : single_val                {$$ = $1;}
+        | '(' func_name exprs ')'   {$2->child = $3; $$ = $2;}
         ;
 
 single_val : INT_VAL    {$$ = new_ast_node(NULL, create_var(lisp_int32, {.lisp_int32 = $1}));}
