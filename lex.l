@@ -1,8 +1,10 @@
+%option noyywrap
+
 %{
 extern "C" {
     int yylex();
 }
-#include "yacc.tab.hh"
+#include "yacc.tab.hpp"
 
 size_t line_count = 0;
 size_t col_count = 0;

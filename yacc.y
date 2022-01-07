@@ -6,8 +6,8 @@ extern "C" {
 
 #include <stdio.h>
 #include <string.h>
-#include "type.hh"
-#include "AST.hh"
+#include "AST.hpp"
+#include "type.hpp"
 
 void yyerror(const char *msg);
 %}
@@ -16,7 +16,7 @@ void yyerror(const char *msg);
     bool bval;
     int ival;
     char *str;
-    AST_node *node;
+    struct AST_NODE *node;
 }
 
 %token '('
@@ -61,7 +61,7 @@ exprs   : expr exprs
         |
         ;
 expr    : single_val
-        | '(' func_name exprs ')' {printf("fun: %s\n", $2);}
+        | '(' func_name exprs ')' 
         ;
 
 single_val : INT_VAL
@@ -69,13 +69,13 @@ single_val : INT_VAL
            | var_name
            ;
 
-var_name   : ID {printf("var: %s\n", $1); $$ = $1;}
+var_name   : ID 
            ;
 
-func_name  : keyword     {$$ = "key";}
-           | buildin_func {$$ = "buildin_func";}
-           | operator {$$ = "op";}
-           | var_name    {$$ = $1;}
+func_name  : keyword     
+           | buildin_func 
+           | operator 
+           | var_name 
            ;
 
 keyword      : IF
@@ -106,6 +106,11 @@ void yyerror(const char *msg) {
 }
 
 int main(int argc, char *argv[]) {
-    yyparse();
+    var_t var;
+
+    set_var_val(&var, lisp_int32, 14);
+    printf("%d %d\n", type_check(var, lisp_int32), var.lisp_int32);
+
+    /* yyparse(); */
     return 0;
 }

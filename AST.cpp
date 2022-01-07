@@ -1,4 +1,4 @@
-#include "AST.hh"
+#include "AST.hpp"
 
 AST_node *new_ast_node(char *name, var_t val) {
     AST_node *node = (AST_node *)malloc(sizeof(AST_node));

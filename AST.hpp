@@ -2,7 +2,7 @@
 #define INCLUDE_AST_NODE_HH
 
 
-#include "type.hh"
+#include "type.hpp"
 
 /**
  * AST_NODE:

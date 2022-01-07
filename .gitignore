@@ -1,6 +1,6 @@
 nmsl
 bin/*
-src/yacc.tab.cc
-src/yacc.tab.hh
-src/lex.yy.cc
+yacc.tab.cpp
+yacc.tab.hpp
+lex.yy.cpp
 *.o

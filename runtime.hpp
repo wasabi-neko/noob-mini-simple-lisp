@@ -1,7 +1,7 @@
 #ifndef INCLUDE_RUNTIME_HH
 #define INCLUDE_RUNTIME_HH
 
-#include "type.hh"
+#include "type.hpp"
 
 #define RUNTIME_STACK_SIZE_MAX 10000
 
