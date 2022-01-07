@@ -66,6 +66,7 @@ exprs   : expr exprs    {$1->next = $2; $$ = $1;}
         |               {$$ = NULL;}
         ;
 expr    : single_val                {$$ = $1;}
+        | '(' ')'                   {$$ = new_ast_node(new std::string("nil"), create_var(lisp_nil, {._content = 0}));}
         | '(' func_name exprs ')'   {$2->child = $3; $$ = $2;}
         ;
 
@@ -94,7 +95,7 @@ buildin_func : PRINT_NUM
              | PRINT_BOOL
              ;
 
-operator     : '+'       {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+operator     : '+'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
              | '-'
              | '*'
              | '/'

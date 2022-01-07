@@ -28,12 +28,14 @@ typedef void (*native_func_body_t)(func_t *self, env_t *env);
  */
 typedef enum TYPE_MASK {
     tag_mask   = 0xff00000000000000,
-    bool_mask  = 0x4000000000000000,
-    int32_mask = 0x8000000000000000,
+    nil_mask   = 0x1000000000000000,
+    bool_mask  = 0x2000000000000000,
+    int32_mask = 0x3000000000000000,
     ptr48_mask = 0x0000000000000000,
 } type_mask;
 
 enum var_types {
+    lisp_nil = nil_mask,
     lisp_bool = bool_mask,
     lisp_int32 = int32_mask,
     lisp_ptr = ptr48_mask,
