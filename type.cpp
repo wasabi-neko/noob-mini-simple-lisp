@@ -4,7 +4,7 @@
 // Variable type
 // -----------------------------------------------------------------------------
 var_t set_var_val(enum var_types type, var_t val) {
-    return {._content = val._content | (type_mask)type};
+    return {._content = (int64_t)(val._content | (type_mask)type)};
 }
 
 bool type_check(const var_t var, enum var_types type) {
