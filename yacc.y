@@ -66,12 +66,12 @@ exprs   : expr exprs    {$1->next = $2; $$ = $1;}
         |               {$$ = NULL;}
         ;
 expr    : single_val                {$$ = $1;}
-        | '(' ')'                   {$$ = new_ast_node(new std::string("nil"), create_var(lisp_nil, {._content = 0}));}
+        | '(' ')'                   {$$ = new_ast_node(new std::string("nil"), set_var_val(lisp_nil, {._content = 0}));}
         | '(' func_name exprs ')'   {$2->child = $3; $$ = $2;}
         ;
 
-single_val : INT_VAL    {$$ = new_ast_node(NULL, create_var(lisp_int32, {.lisp_int32 = $1}));}
-           | BOOL_VAL   {$$ = new_ast_node(NULL, create_var(lisp_bool, {.lisp_int32 = $1}));}
+single_val : INT_VAL    {$$ = new_ast_node(NULL, set_var_val(lisp_int32, {.lisp_int32 = $1}));}
+           | BOOL_VAL   {$$ = new_ast_node(NULL, set_var_val(lisp_bool, {.lisp_int32 = $1}));}
            | var_name   {$$ = $1;}
            ;
 

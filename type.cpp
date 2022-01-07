@@ -3,15 +3,8 @@
 // -----------------------------------------------------------------------------
 // Variable type
 // -----------------------------------------------------------------------------
-var_t create_var(enum var_types type, var_t val) {
-    var_t tmp;
-    tmp._content = val._content | (type_mask) type;
-    return tmp;
-}
-
-void set_var_val(var_t *var, enum var_types type, var_t val) {
-    var->_content = val._content |  (type_mask)type;
-    return;
+var_t set_var_val(enum var_types type, var_t val) {
+    return {._content = val._content | (type_mask)type};
 }
 
 bool type_check(const var_t var, enum var_types type) {
