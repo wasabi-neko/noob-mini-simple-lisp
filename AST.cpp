@@ -30,6 +30,10 @@ void append_next(AST_node *root, AST_node *child) {
 }
 
 void print_node(AST_node *node) {
+    if (node == NULL) {
+        printf("node null\n");
+        return;
+    }
     if (node->name == NULL)
         printf("NULL");
     else
@@ -40,17 +44,15 @@ void print_node(AST_node *node) {
     fflush(stdout);
     return;
 }
-void visit(AST_node *root) {
-    if (root == NULL)
-        return;
 
+void visit(AST_node *root) {
     print_node(root);
     if (root->child != NULL) {
         printf("go child\n");
         visit(root->child);
     }
 
-    if (root->name != NULL) {
+    if (root->next != NULL) {
         printf("go next\n");
         visit(root->next);
     }
