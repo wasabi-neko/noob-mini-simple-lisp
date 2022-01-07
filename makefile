@@ -9,7 +9,7 @@ parser_h := yacc.tab.hpp
 lex := lex.l
 scanner_c := lex.yy.cpp
 
-EXEC := bin/nmsl
+EXEC := nmsl
 
 
 all: $(EXEC)
