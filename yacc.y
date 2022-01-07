@@ -87,12 +87,12 @@ func_name  : keyword      {$$ = $1;}
            | var_name     {$$ = $1;}
            ;
 
-keyword      : IF         
-             | DEFINE
-             | FUN
+keyword      : IF         {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_IF_INFO, NULL);}
+             | DEFINE     {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_DEFINE_INFO, NULL);}
+             | FUN        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_LAMBDA_INFO, NULL);}
              ;
-buildin_func : PRINT_NUM
-             | PRINT_BOOL
+buildin_func : PRINT_NUM  {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_PRINT_NUM_INFO, NULL);}
+             | PRINT_BOOL {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_PRINT_BOOL_INFO, NULL);}
              ;
 
 operator     : '+'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}

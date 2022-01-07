@@ -17,15 +17,21 @@ typedef void (*native_func_body_t)(func_t *self, env_t *env);
     };                                                               \
 
 inline std::string *_lisp_native_name_string(const char *name) {
-    std::string *str = new std::string("lisp native:");
+    std::string *str = new std::string("lisp_native_");
     *str += name;
     return str;
 }
 
-DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"),-1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), -1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_MIN, _lisp_native_name_string("minus"),-1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_MUL, _lisp_native_name_string("multiply"),-1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_DIV, _lisp_native_name_string("division"),-1)
+
+DEFINE_LISP_NATIVE_FUNC_INFO(_IF, _lisp_native_name_string("if"), 3)
+DEFINE_LISP_NATIVE_FUNC_INFO(_DEFINE, _lisp_native_name_string("define"), 2)
+DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), -1)   // argc: at least 2
+DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), 2)
+DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), 2)
 
 /**
  * nf stands for Native Function
