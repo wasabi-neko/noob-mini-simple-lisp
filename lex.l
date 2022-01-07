@@ -11,12 +11,12 @@ size_t col_count = 0;
 %}
 
 digit [0-9]+
+int ({digit}|\-{digit})
 letter [a-z]+
-id {letter}({letter}|digit|\-)*
+simple_id {letter}+
+complex_id {letter}+({digit}|{letter}|\-)+
 
 %%
-[{digit}|\-{digit}]          {return INT_VAL;}
-[#t|#f]                      {return BOOL_VAL;}
 
 \(  {return yytext[0];}
 \)  {return yytext[0];}
@@ -37,12 +37,28 @@ print-bool {return PRINT_BOOL;}
 if     {return IF;}
 lambda {return FUN;}
 define {return DEFINE;}
-{id} {
-        yylval.str = (char*)malloc(yyleng+1);
-        strcpy(yylval.str, yytext);
-        yylval.str[yyleng] = '\0';
-        return ID;
-     }
+
+#t {
+    yylval.bval = true;
+    return BOOL_VAL;
+}
+
+#f {
+    yylval.bval = false;
+    return BOOL_VAL;
+}
+
+({simple_id}|{complex_id}) {
+    yylval.str = (char*)malloc(yyleng+1);
+    strcpy(yylval.str, yytext);
+    yylval.str[yyleng] = '\0';
+    return ID;
+}
+
+{int} {
+    yylval.ival = atoi(yytext);
+    return INT_VAL;
+}
 
 .   {col_count++;};
 \n  {line_count++;};

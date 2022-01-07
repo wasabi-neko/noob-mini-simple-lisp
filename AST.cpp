@@ -1,6 +1,7 @@
+#include <string>
 #include "AST.hpp"
 
-AST_node *new_ast_node(char *name, var_t val) {
+AST_node *new_ast_node(std::string *name, var_t val) {
     AST_node *node = (AST_node *)malloc(sizeof(AST_node));
     node->name = name;
     node->val = val;

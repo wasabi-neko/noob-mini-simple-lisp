@@ -4,15 +4,21 @@
 #include <map>
 #include <string>
 
+// * pre-defines
 // type.hh
 typedef union LISP_VAR_TYPE var_t;
 typedef struct LISP_FUNCTION_TYPE func_t;
+
 // AST.hh
 typedef struct AST_NODE AST_node;
+
 // runtime.hh
 typedef struct RUNTIME_ENV env_t;
 typedef void (*native_func_body_t)(func_t *self, env_t *env);
 
+// -----------------------------------------------------------------------------
+// Variables
+// -----------------------------------------------------------------------------
 /**
  * use 64 bit data to represent all variables, useing data taggin to distinguish between types
  * |    64 bit var    |
@@ -28,9 +34,9 @@ typedef enum TYPE_MASK {
 } type_mask;
 
 enum var_types {
-    list_bool = bool_mask,
+    lisp_bool = bool_mask,
     lisp_int32 = int32_mask,
-    list_ptr = ptr48_mask,
+    lisp_ptr = ptr48_mask,
 };
 typedef union LISP_VAR_TYPE{
     int64_t _content;
@@ -39,7 +45,8 @@ typedef union LISP_VAR_TYPE{
     void *lisp_ptr;
 } var_t;
 
-void set_var_val(var_t *, enum var_types, int64_t val);
+var_t create_var(enum var_types type, var_t val);
+void set_var_val(var_t *, enum var_types, var_t val);
 enum var_types get_type(const var_t, enum var_types);
 bool type_check(const var_t, enum var_types);
 
@@ -48,20 +55,24 @@ bool get_bool_val(const var_t);
 func_t *get_func_ptr(const var_t);
 
 
-typedef struct LISP_FUNCTION_TYPE {
-    bool is_native;
-    char *name;                             // not neccesary for runtime
-    int argc;                               // -1 if not limited
-    std::map<char*, int> id_map;    // map id name to stack offset. (contain args_name and local variable)
-    struct LISP_FUNCTION_TYPE *static_parent;
-
-    union {
+// -----------------------------------------------------------------------------
+// Functions
+// -----------------------------------------------------------------------------
+typedef union FUNCTION_BODY_T {
         struct AST_NODE *ast_body;                 //? maybe i can use bytecode?
         native_func_body_t native_body;
-    } body;
+} func_body_t;
+
+typedef struct LISP_FUNCTION_TYPE {
+    bool is_native;
+    std::string *name;                             // not neccesary for runtime
+    int argc;                               // -1 if not limited
+    std::map<char*, int> *id_map;    // map id name to stack offset. (contain args_name and local variable)
+    struct LISP_FUNCTION_TYPE *static_parent;
+    func_body_t body;
 } func_t;
 
-func_t *new_func(char *name);
+func_t *new_func(bool is_native, std::string *name, int argc, std::map<char*, int> *id_map, func_t *parent, func_body_t body);
 void free_func(func_t *);
 void evoke_func(func_t *, int argc, env_t *env);
 

@@ -5,9 +5,12 @@ extern "C" {
 }
 
 #include <stdio.h>
-#include <string.h>
+#include <string>
+
 #include "AST.hpp"
 #include "type.hpp"
+#include "runtime.hpp"
+#include "native_func.hpp"
 
 void yyerror(const char *msg);
 %}
@@ -60,25 +63,28 @@ program : exprs
 exprs   : expr exprs
         |
         ;
-expr    : single_val
+expr    : single_val    {printf("%d\n", $1->val.lisp_int32);}
         | '(' func_name exprs ')' 
         ;
 
-single_val : INT_VAL
-           | BOOL_VAL
-           | var_name
+single_val : INT_VAL    {$$ = new_ast_node(NULL, create_var(lisp_int32, {.lisp_int32 = $1}));}
+           | BOOL_VAL   {$$ = new_ast_node(NULL, create_var(lisp_bool, {.lisp_int32 = $1}));}
+           | var_name   {$$ = $1;}
            ;
 
-var_name   : ID 
+var_name   : ID {
+                    var_t var = {._content = 0};
+                    $$ = new_ast_node(new std::string($1), var);
+                }
            ;
 
-func_name  : keyword     
-           | buildin_func 
-           | operator 
-           | var_name 
+func_name  : keyword      {$$ = $1;}
+           | buildin_func {$$ = $1;} 
+           | operator     {$$ = $1;}
+           | var_name     {$$ = $1;}
            ;
 
-keyword      : IF
+keyword      : IF         
              | DEFINE
              | FUN
              ;
@@ -86,7 +92,7 @@ buildin_func : PRINT_NUM
              | PRINT_BOOL
              ;
 
-operator     : '+'
+operator     : '+'       {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
              | '-'
              | '*'
              | '/'
