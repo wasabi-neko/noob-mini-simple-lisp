@@ -69,7 +69,7 @@ typedef union FUNCTION_BODY_T {
 typedef struct LISP_FUNCTION_TYPE {
     bool is_native;
     std::string *name;                          // not neccesary for runtime
-    int lexical_level;                          // the lexical_level of the function. for determind static parent in runtime
+    int scope_level;                          // the lexical_level of the function. for determind static parent in runtime
     int argc;                                   // -1 if not limited
     std::map<char*, int> *id_map;               // map id name to stack offset. (contain args_name and local variable)
     struct LISP_FUNCTION_TYPE *static_parent;
