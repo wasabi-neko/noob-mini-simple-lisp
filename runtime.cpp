@@ -1,5 +1,6 @@
 #include "runtime.hpp"
 #include "native_func.hpp"
+#include "error_handling.hpp"
 
 // -----------------------------------------------------------------------------
 // Stack Dump methods
@@ -43,11 +44,8 @@ void dump_func_stack(env_t *env) {
 // -----------------------------------------------------------------------------
 
 void push_stack(env_t * env, var_t val) {
-    if (env->data_stack.rsp >= RUNTIME_STACK_SIZE_MAX) {
-        //! error
-        printf("stack overflow");
-        return;
-    }
+    if (env->data_stack.rsp >= RUNTIME_STACK_SIZE_MAX)
+        raise_stackoverflow_error(env);
     env->data_stack.rsp += 1;
     env->data_stack.stack[env->data_stack.rsp] = val;
     return;
@@ -55,9 +53,7 @@ void push_stack(env_t * env, var_t val) {
 
 var_t pop_stack(env_t *env) {
     if (env->data_stack.rsp < 0) {
-        // ! error
-        printf("no content in stack can be popped");
-        return {};
+        raise_stackoverflow_error(env);
     }
     var_t val = env->data_stack.stack[env->data_stack.rsp];
     env->data_stack.rsp -= 1;
@@ -67,9 +63,7 @@ var_t pop_stack(env_t *env) {
 var_t get_local_var(env_t *env, int offset) {
     int index = env->data_stack.rbp + offset;
     if (index < 0 || index >= RUNTIME_STACK_SIZE_MAX) {
-        // ! error
-        printf("illigle memory acceess");
-        return {};
+        raise_stackoverflow_error(env);
     }
 
     return env->data_stack.stack[index];
@@ -97,9 +91,7 @@ func_t *get_top_func(env_t *env) {
     int index = env->func_stack.rsp;
 
     if (index < 0 || index >= RUNTIME_FUNC_CALL_STACK_MAX) {
-        // ! error
-        printf("top func access error");
-        return NULL;
+        raise_stackoverflow_error(env);
     }
 
     return env->func_stack.stack[index];
@@ -109,9 +101,7 @@ func_t *get_top_func(env_t *env) {
 // * you should move rbp to ready state before use this method
 void add_func_call_stack(env_t *env, func_t *func_template) {
     if (env->func_stack.rsp >= RUNTIME_FUNC_CALL_STACK_MAX) {
-        // ! error
-        printf("funcall out of stack");
-        return;
+        raise_stackoverflow_error(env);
     }
     func_t *instance = clone_func(func_template);
     instance->static_parent = NULL;
@@ -186,9 +176,7 @@ var_t ask_symbol(env_t *env, std::string* id_name) {
 
     // if not found
     if (target == NULL) {
-        // ! error
-        printf("symbol \'%s\' not found", id_name->data());
-        return {};
+        raise_name_error(env, id_name);
     }
 
     int index = target->runtime_rbp + offset;
@@ -249,9 +237,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     printf("\n======================\n");
 
     if (!type_check(first, lisp_ptr)) {
-        // ! error
-        printf("the first item is not callable\n");
-        return {};
+        raise_not_callable_error(env, first);
     }
 
     add_func_call_stack(env, (func_t*)first.lisp_ptr);   // clone this function and push into funccall stack

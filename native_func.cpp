@@ -1,6 +1,7 @@
 #include "native_func.hpp"
 #include "runtime.hpp"
 #include "type.hpp"
+#include "error_handling.hpp"
 
 AST_node *create_ast_nf_node(const func_t *native_info, func_t *parent) {
     var_t fun_ptr = set_var_val(lisp_ptr, {.lisp_ptr = (void*)native_info});
@@ -20,32 +21,17 @@ void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                   
     /*argc check*/                                                                                \
     if (self->argc < 0) {                                                                         \
         if (argc_given < (self->argc + 1) * -1) {                                                 \
-            /*//! error*/                                                                         \
-            printf("at least %d argument need, but %d given\n",                                   \
-                (self->argc+1)*-1, argc_given);                                                   \
-            exit(-1);                                                                             \  
-            return;                                                                               \   
         }                                                                                         \
     } else {                                                                                      \
-        if (argc_given != self->argc) {                                                           \
-            /*// ! error*/                                                                        \
-            printf("%d argument need, but %d given\n", self->argc, argc_given);                   \
-            exit(-1);                                                                             \
-            return;                                                                               \
-        }                                                                                         \
+        if (argc_given != self->argc)                                                             \
+            raise_argc_error(env, self, argc_given);                                              \
     }                                                                                             \
                                                                                                   \
     /*type check*/                                                                                \
     var_t *arg = &env->data_stack.stack[env->data_stack.rbp + 1];                                 \
     for (int i = 1; i <= argc_given; i++) {                                                       \
-        if (!type_check(arg[i], param_type)) {                                                    \
-            /*// ! error*/                                                                        \
-            printf("error: type error\n");                                                        \
-            print_var_val(env->data_stack.stack[i]);                                              \
-            fflush(stdout);                                                                       \
-            exit(-1);                                                                             \
-            return;                                                                               \
-        }                                                                                         \
+        if (!type_check(arg[i], param_type))                                                      \
+            raise_type_error(env, param_type, arg[i]);                                            \
     }                                                                                             \
                                                                                                   \
     /* for every arg from arg[2] to end */                                                        \
@@ -73,18 +59,23 @@ DEFINE_SINGLE_OPERATION_FUNC_BODY(_OR,  lisp_bool, lisp_bool, arg[1], {result.li
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_NOT, lisp_bool, lisp_bool, {.lisp_bool = !arg[1].lisp_bool}, {});
 
 
+void LISP_NATIVE_FUNC_BODY_PRINT_BOOL(func_t *self, env_t *env) {
+    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
+    return;
+}
+
+void LISP_NATIVE_FUNC_BODY_PRINT_NUM(func_t *self, env_t *env) {
+    return;
+}
+
 void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
     return;
 }
+
 void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
     return;
 }
+
 void LISP_NATIVE_FUNC_BODY_LAMBDA(func_t *self, env_t *env) {
-    return;
-}
-void LISP_NATIVE_FUNC_BODY_PRINT_BOOL(func_t *self, env_t *env) {
-    return;
-}
-void LISP_NATIVE_FUNC_BODY_PRINT_NUM(func_t *self, env_t *env) {
     return;
 }
