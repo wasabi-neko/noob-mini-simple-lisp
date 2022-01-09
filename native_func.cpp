@@ -12,7 +12,6 @@ AST_node *create_ast_nf_node(const func_t *native_info, func_t *parent) {
 void LISP_NATIVE_FUNC_BODY_MAIN(func_t *self, env_t *env) {
     printf("EXIT");
     exit(0);
-    return;
 }
 
 #define DEFINE_SINGLE_OPERATION_FUNC_BODY(name, param_type, result_type, init_val, iter_lambda)   \
@@ -23,8 +22,7 @@ void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                   
     /*type check*/                                                                                \
     var_t *arg = &env->data_stack.stack[env->data_stack.rbp + 1];                                 \
     for (int i = 1; i <= argc_given; i++) {                                                       \
-        if (!type_check(arg[i], param_type))                                                      \
-            raise_type_error(env, param_type, arg[i]);                                            \
+        assert_type(env, param_type, arg[i]);                                                     \
     }                                                                                             \
                                                                                                   \
     /* for every arg from arg[2] to end */                                                        \
@@ -33,7 +31,6 @@ void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                   
         iter_lambda                                                                               \
     }                                                                                             \
     env->result = set_var_val(result_type, {.result_type = result.result_type});                  \
-    return;                                                                                       \
 }                                                                              
  
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_ADD, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 += arg[i].lisp_int32;});
@@ -54,21 +51,44 @@ DEFINE_SINGLE_OPERATION_FUNC_BODY(_NOT, lisp_bool, lisp_bool, {.lisp_bool = !arg
 
 void LISP_NATIVE_FUNC_BODY_PRINT_BOOL(func_t *self, env_t *env) {
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
-    return;
+    assert_argc(env, self, argc_given);
+    var_t var = get_local_var(env, 2);
+    assert_type(env, lisp_bool, var);
+    if (var.lisp_bool)
+        printf("#t\n");
+    else
+        printf("#f\n");
+
+    env->result = set_var_val(lisp_nil, {._content = 0});
 }
 
 void LISP_NATIVE_FUNC_BODY_PRINT_NUM(func_t *self, env_t *env) {
-    return;
+    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
+    assert_argc(env, self, argc_given);
+    var_t var = get_local_var(env, 2);
+    assert_type(env, lisp_int32, var);
+    printf("%d\n", var.lisp_int32);
+
+    env->result = set_var_val(lisp_nil, {._content = 0});
 }
 
 void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
-    return;
+    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
+    assert_argc(env, self, argc_given);
+
+    env->result = set_var_val(lisp_nil, {._content = 0});
 }
 
 void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
-    return;
+    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
+    assert_argc(env, self, argc_given);
+
+    env->result = set_var_val(lisp_nil, {._content = 0});
 }
 
 void LISP_NATIVE_FUNC_BODY_LAMBDA(func_t *self, env_t *env) {
-    return;
+    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
+    assert_argc(env, self, argc_given);
+
+    env->result = set_var_val(lisp_nil, {._content = 0});
 }

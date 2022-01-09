@@ -66,3 +66,9 @@ void assert_argc(env_t *env, func_t *func, int argc_given) {
             raise_argc_error(env, func, argc_given);
     }
 }
+
+void assert_type(env_t *env, enum var_types type_expect, var_t the_var) {
+    if (!type_check(the_var, type_expect)) {
+        raise_type_error(env, type_expect, the_var);
+    }
+}

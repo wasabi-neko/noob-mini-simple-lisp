@@ -50,8 +50,8 @@ DEFINE_LISP_NATIVE_FUNC_INFO(_NOT, _lisp_native_name_string("not"), false, 1)
 DEFINE_LISP_NATIVE_FUNC_INFO(_IF, _lisp_native_name_string("if"), true, 3)
 DEFINE_LISP_NATIVE_FUNC_INFO(_DEFINE, _lisp_native_name_string("define"), true, 2)
 DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), true, -3)         // argc: at least 2
-DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), false, 2)
-DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), false, 2)
+DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), false, 1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), false, 1)
 
 /**
  * nf stands for Native Function

@@ -12,3 +12,4 @@ void raise_argc_error(env_t *, func_t *func, int argc_given);
 void raise_stackoverflow_error(env_t*);
 
 void assert_argc(env_t *, func_t *func, int argc_given);
+void assert_type(env_t *, enum var_types type_expect, var_t the_var);
