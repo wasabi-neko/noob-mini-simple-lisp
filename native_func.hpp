@@ -11,7 +11,7 @@ typedef void (*native_func_body_t)(func_t *self, env_t *env);
 #define DEFINE_LISP_NATIVE_FUNC_INFO(FUNC_ID, name, argc)            \
     void LISP_NATIVE_FUNC_BODY##FUNC_ID(func_t *self, env_t *env);   \
     const func_t LISP_NATIVE_FUNC##FUNC_ID##_INFO = {                \
-        true, name, argc,                                            \
+        true, name, -1, argc,                                        \
         NULL, NULL,                                                  \
         {.native_body = LISP_NATIVE_FUNC_BODY##FUNC_ID}              \
     };                                                               \

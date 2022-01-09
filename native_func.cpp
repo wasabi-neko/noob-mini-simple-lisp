@@ -3,6 +3,7 @@
 AST_node *create_ast_nf_node(const func_t *native_info, func_t *parent) {
     func_t *native_clone = new_func(true, 
                                     native_info->name,
+                                    -1,
                                     native_info->argc,
                                     NULL,
                                     parent,

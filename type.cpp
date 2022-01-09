@@ -19,10 +19,11 @@ enum var_types get_type(const var_t);
 // Function type
 // -----------------------------------------------------------------------------
 
-func_t *new_func(bool is_native, std::string *name, int argc, std::map<char*, int> *id_map, func_t *parent, func_body_t body) {
+func_t *new_func(bool is_native, std::string *name, int level, int argc, std::map<char*, int> *id_map, func_t *parent, func_body_t body) {
     func_t *func = (func_t*) malloc(sizeof(func_t));
     func->is_native = is_native;
     func->name = name;
+    func->scope_level = level;
     func->argc = argc;
     func->static_parent = parent;
     func->id_map = id_map;
