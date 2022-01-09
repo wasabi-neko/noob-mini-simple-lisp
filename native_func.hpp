@@ -3,6 +3,7 @@
 #include "type.hpp"
 #include "AST.hpp"
 
+#define NATIVE_FUNC_SCOPE_LEVEL 0x7fffffff
 
 typedef void (*native_func_body_t)(func_t *self, env_t *env);
 
@@ -19,7 +20,7 @@ typedef void (*native_func_body_t)(func_t *self, env_t *env);
 #define DEFINE_LISP_NATIVE_FUNC_INFO(FUNC_ID, name, allow_expr,argc)            \
     void LISP_NATIVE_FUNC_BODY##FUNC_ID(func_t *self, env_t *env);   \
     const func_t LISP_NATIVE_FUNC##FUNC_ID##_INFO = {                \
-        true, allow_expr, name, -1, argc,                                        \
+        true, allow_expr, name, NATIVE_FUNC_SCOPE_LEVEL, argc,                                        \
         NULL, NULL, -1,                                              \
         {.native_body = LISP_NATIVE_FUNC_BODY##FUNC_ID}              \
     };                                                               \

@@ -2,6 +2,7 @@
 #define INCLUDE_RUNTIME_HH
 
 #include "type.hpp"
+#include "AST.hpp"
 
 #define RUNTIME_STACK_SIZE_MAX 10000
 #define RUNTIME_FUNC_CALL_STACK_MAX 1000
@@ -11,7 +12,7 @@
  * Runtime environment
  * 
  * - Stack:
- *   - rsp: stack pointer, keep point to next empty space
+ *   - rsp: stack pointer, keep point to the top element
  *   - rbp: stack base pointer, keep point to dynamic_link(the last rbp value saved in stack)
  **/
 typedef struct RUNTIME_ENV {
@@ -35,6 +36,10 @@ typedef struct RUNTIME_ENV {
     } func_stack;
 } env_t;
 
+// print methods
+void dump_data_stack(env_t *env);
+void dump_func_stack(env_t *env);
+
 // Data_stack Methods
 void push_stack(env_t *, var_t);
 var_t pop_stack(env_t *);
@@ -50,7 +55,8 @@ void pop_func_stack(env_t *);
 
 // Runtime Methods
 var_t ask_symbol(env_t *, std::string*);
-void interpret_ast(AST_node *, env_t *);
+var_t interpret_ast(AST_node *, env_t *, bool allow_exp_arg);
+var_t execute_main(func_t *, env_t *);
 
 
 #endif

@@ -47,6 +47,8 @@ typedef union LISP_VAR_TYPE{
     bool lisp_bool;
     int lisp_int32;
     void *lisp_ptr;
+    struct AST_NODE *ast_node_ptr;
+    func_t *func_ptr;
 } var_t;
 
 var_t set_var_val(enum var_types, var_t val);
