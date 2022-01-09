@@ -72,19 +72,21 @@ typedef union FUNCTION_BODY_T {
         native_func_body_t native_body;
 } func_body_t;
 
+typedef std::map<std::string, int> id_map_t;
+
 typedef struct LISP_FUNCTION_TYPE {
     bool is_native;
     bool allow_exp_arg;
     std::string *name;                          // not neccesary for runtime
     int scope_level;                            // the lexical_level of the function. for determind static parent in runtime
     int argc;                                   // -1 means at least 0; -2 meas at least 1
-    std::map<std::string, int> *id_map;               // map id name to stack offset. (contain args_name and local variable)
+    id_map_t *id_map;               // map id name to stack offset. (contain args_name and local variable)
     struct LISP_FUNCTION_TYPE *static_parent;
     int runtime_rbp;                            // the rbp position in it's stack frame
     func_body_t body;
 } func_t;
 
-func_t *new_func(bool is_native, std::string *name, int level, int argc, std::map<std::string, int> *id_map, func_t *parent, func_body_t body);
+func_t *new_func(bool is_native, std::string *name, int level, int argc, id_map_t *id_map, func_t *parent, func_body_t body);
 func_t *clone_func(func_t *);
 void free_func(func_t *);
 void evoke_func(func_t *, int argc, env_t *env);

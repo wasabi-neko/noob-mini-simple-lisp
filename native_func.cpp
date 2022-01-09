@@ -99,7 +99,13 @@ void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
 void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
     assert_argc(env, self, argc_given);
-    //TODO:
+    func_t *scope = self->static_parent;
+
+    if (scope == NULL) {
+        printf("Error: not static parent!\n");
+        exit(-1);
+    }
+
     env->result = set_var_val(lisp_nil, {._content = 0});
 }
 

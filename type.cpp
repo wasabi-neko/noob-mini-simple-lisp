@@ -93,7 +93,7 @@ void print_var_val(const var_t var) {
 // Function type
 // -----------------------------------------------------------------------------
 
-func_t *new_func(bool is_native, std::string *name, int level, int argc, std::map<std::string, int> *id_map, func_t *parent, func_body_t body) {
+func_t *new_func(bool is_native, std::string *name, int level, int argc, id_map_t *id_map, func_t *parent, func_body_t body) {
     func_t *func = (func_t*) malloc(sizeof(func_t));
     func->is_native = is_native;
     func->name = name;
@@ -113,7 +113,7 @@ func_t *clone_func(func_t *func) {
     clone->scope_level = func->scope_level;
     clone->argc = func->argc;
     clone->static_parent = func->static_parent;
-    clone->id_map = new std::map<std::string, int>();
+    clone->id_map = new id_map_t();
     if (func->id_map != NULL) {
        clone->id_map->insert(func->id_map->begin(), func->id_map->end());
     }
