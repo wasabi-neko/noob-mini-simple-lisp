@@ -190,24 +190,28 @@ var_t ask_symbol(env_t *env, std::string* id_name) {
 var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     create_stack_frame(env);
     
+    #ifdef DEBUG
     printf("start push list\n");
     dump_data_stack(env);
     dump_func_stack(env);
     printf("======================\n\n");
+    #endif
 
     // * First step:
     // * push all list into stack
     AST_node *node = root;
     while (node != NULL) {
+        #ifdef DEBUG
+        printf("next_node: ");
         print_node(node);
         printf("\n");
+        #endif
         var_t val_to_push;
 
         if (node->child != NULL) {
             // if the node is a compound expression
             if (allow_exp_arg) {
                 // just push the AST node into the stack as the argument
-                print_node(node);
                 val_to_push = set_var_val(lisp_ast_ptr, {.lisp_ptr = node});
             } else {
                 // interpret the node and push the result into  stack
@@ -239,11 +243,12 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     //* function evoke
     var_t first = get_local_var(env, 1);                    // fetch first item and do type checking
 
-    // ! test function
+#ifdef DEBUG
     printf("end push list\n");
     dump_data_stack(env);
     dump_func_stack(env);
     printf("======================\n\n");
+#endif
 
     if (!type_check(first, lisp_ptr)) {
         raise_not_callable_error(env, first);
@@ -287,13 +292,19 @@ void execute_main(AST_node *root, env_t *env) {
     env->func_stack.rsp += 1;
     env->func_stack.stack[env->func_stack.rsp] = global_scope;
 
+#ifdef DEBUG
     dump_data_stack(env);
     dump_func_stack(env);
     printf("======================\n\n");
+#endif
 
     AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_EXIT_INFO, NULL);
     exit_node->next = root;
+
+#ifdef DEBUG
     graph_AST(exit_node);
+#endif
+
     interpret_ast(exit_node, env, false);
     return;
 }

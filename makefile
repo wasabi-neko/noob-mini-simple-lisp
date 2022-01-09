@@ -14,15 +14,6 @@ EXEC := nmsl
 
 all: $(EXEC)
 
-$(parser_c):
-	bison -d -o $(parser_c) $(yacc)
-
-$(scanner_c):
-	flex -o $(scanner_c) $(lex)
-
-$(EXEC): $(scanner_c) $(parser_c)
-	$(CC) $(CFLAGS) ./*.cpp -o $(EXEC)
-
 clean:
 	-rm bin/*
 	-rm *.o
@@ -36,3 +27,15 @@ test: $(EXEC)
 
 test-all: $(EXEC)
 	-bash test.bash
+
+debug: $(scanner_c) $(parser_c)
+	$(CC) $(CFLAGS) -D DEBUG ./*.cpp -o $(EXEC)
+
+$(parser_c):
+	bison -d -o $(parser_c) $(yacc)
+
+$(scanner_c):
+	flex -o $(scanner_c) $(lex)
+
+$(EXEC): $(scanner_c) $(parser_c)
+	$(CC) $(CFLAGS) ./*.cpp -o $(EXEC)

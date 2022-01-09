@@ -15,7 +15,7 @@ void LISP_NATIVE_FUNC_BODY_MAIN(func_t *self, env_t *env) {
 }
 
 void LISP_NATIVE_FUNC_BODY_MAIN_EXIT(func_t *self, env_t *env) {
-    printf("EXIT");
+    printf("EXIT\n");
     exit(0);
 }
 
@@ -130,9 +130,11 @@ void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
 
     (*scope->id_map)[*name] = var_mem;      // copy by value
 
+#ifdef DEBUG
     printf("\nDEBUG: Mapping %s to", name->data());
     print_var_val(val);
     printf("\n");
+#endif
 
     env->result = set_var_val(lisp_nil, {._content = 0});
 }
