@@ -4,4 +4,5 @@ bin/*
 yacc.tab.cpp
 yacc.tab.hpp
 lex.yy.cpp
+test_output
 *.o

@@ -105,15 +105,15 @@ buildin_func : PRINT_NUM  {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_PRINT_NUM_I
              ;
 
 operator     : '+'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '-'
-             | '*'
-             | '/'
-             | MOD
-             | '>'
-             | '<'
-             | '='
-             | AND
-             | OR
+             | '-'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | '*'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | '/'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | MOD        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | '>'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | '<'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | '='        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | AND        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | OR         {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
              ;
 
 %%
