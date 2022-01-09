@@ -7,17 +7,6 @@
 #define RUNTIME_STACK_SIZE_MAX 10000
 #define RUNTIME_FUNC_CALL_STACK_MAX 1000
 
-struct DATA_STACK {
-    var_t stack[RUNTIME_STACK_SIZE_MAX];
-    int rbp;
-    int rsp;
-};
-
-struct FUNC_STACK {
-    func_t *stack[RUNTIME_FUNC_CALL_STACK_MAX];
-    int rsp;
-    // rbp = 0;
-};
 
 /**
  * Runtime environment
@@ -31,12 +20,20 @@ typedef struct RUNTIME_ENV {
     var_t result;
 
     // data stack
-    struct DATA_STACK data_stack;
+    struct DATA_STACK {
+        var_t stack[RUNTIME_STACK_SIZE_MAX];
+        int rbp;
+        int rsp;
+    } data_stack;
 
     //? maintain another funcall_stack is not very neccesary, but it's way more easier to operator another 
     //? call stack instead searching dynamic links and static links in data stack
     // function call stack
-    struct FUNC_STACK func_stack;
+    struct FUNC_STACK {
+        func_t *stack[RUNTIME_FUNC_CALL_STACK_MAX];
+        int rsp;
+        // rbp = 0;
+    } func_stack;
 } env_t;
 
 // Data_stack Methods

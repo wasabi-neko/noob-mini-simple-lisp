@@ -5,10 +5,6 @@
 extern "C" int yyparse(void);
 extern func_t lisp_main;
 
-void AST_interpreter(func_t *main, env_t *env);
-var_t interpret(AST_node*node, env_t *env);
-
-
 env_t runtime_env;
 
 int main(int argc, char *argv[]) {
