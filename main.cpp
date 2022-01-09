@@ -1,11 +1,15 @@
 #include "type.hpp"
 #include "AST.hpp"
+#include "runtime.hpp"
 
 extern "C" int yyparse(void);
 extern func_t lisp_main;
 
 void AST_interpreter(func_t *main, env_t *env);
 var_t interpret(AST_node*node, env_t *env);
+
+
+env_t runtime_env;
 
 int main(int argc, char *argv[]) {
     yyparse();
@@ -16,12 +20,12 @@ int main(int argc, char *argv[]) {
 }
 
 
-void AST_interpreter(func_t *main, env_t *env) {
-    AST_node *rip;
-    // env->push_func(main);
+// void AST_interpreter(func_t *main, env_t *env) {
+//     AST_node *rip;
+//     // env->push_func(main);
 
-    return;
-}
+//     return;
+// }
 
 // var_t interpret(AST_node *root, env_t *env, bool allow_exp_arg) {
 //     int next_func_rbp = rsp;

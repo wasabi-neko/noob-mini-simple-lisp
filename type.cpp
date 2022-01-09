@@ -80,7 +80,7 @@ void print_var_val(const var_t var) {
 // Function type
 // -----------------------------------------------------------------------------
 
-func_t *new_func(bool is_native, std::string *name, int level, int argc, std::map<char*, int> *id_map, func_t *parent, func_body_t body) {
+func_t *new_func(bool is_native, std::string *name, int level, int argc, std::map<std::string, int> *id_map, func_t *parent, func_body_t body) {
     func_t *func = (func_t*) malloc(sizeof(func_t));
     func->is_native = is_native;
     func->name = name;
@@ -92,5 +92,22 @@ func_t *new_func(bool is_native, std::string *name, int level, int argc, std::ma
     return func;
 }
 
-void free_func(func_t *);
+func_t *clone_func(func_t *func) {
+    func_t *clone = (func_t*) malloc(sizeof(func_t));
+    clone->is_native = func->is_native;
+    clone->name = func->name;
+    clone->scope_level = func->scope_level;
+    clone->argc = func->argc;
+    clone->static_parent = func->static_parent;
+    clone->id_map = new std::map<std::string, int>();
+    clone->runtime_rbp = -1;
+    clone->body = func->body;
+    return clone;
+}
+
+void free_func(func_t *func) {
+    free(func->id_map);
+    free(func);
+}
+
 void evoke_func(func_t *, int argc, env_t *env);
