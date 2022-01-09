@@ -56,7 +56,7 @@ void pop_func_stack(env_t *);
 // Runtime Methods
 var_t ask_symbol(env_t *, std::string*);
 var_t interpret_ast(AST_node *, env_t *, bool allow_exp_arg);
-var_t execute_main(func_t *, env_t *);
+void execute_main(AST_node *, env_t *);
 
 
 #endif

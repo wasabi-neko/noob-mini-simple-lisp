@@ -31,6 +31,8 @@ inline std::string *_lisp_native_name_string(const char *name) {
     return str;
 }
 
+DEFINE_LISP_NATIVE_FUNC_INFO(_MAIN, _lisp_native_name_string("lisp_main"), false, -1)
+
 DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), false, -1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_MIN, _lisp_native_name_string("minus"),-1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_MUL, _lisp_native_name_string("multiply"),-1)

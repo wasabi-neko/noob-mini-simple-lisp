@@ -14,7 +14,7 @@ extern "C" {
 
 void yyerror(const char *msg);
 
-func_t lisp_main;
+AST_node *lisp_root;
 %}
 
 %union {
@@ -59,7 +59,7 @@ func_t lisp_main;
 %type <node> operator
 
 %%
-program : exprs         {lisp_main.body.ast_body = $1;}
+program : exprs         {lisp_root = $1;}
         ;
 
 exprs   : expr exprs    {$1->next = $2; $$ = $1;}

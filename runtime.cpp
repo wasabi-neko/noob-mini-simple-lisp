@@ -1,4 +1,5 @@
 #include "runtime.hpp"
+#include "native_func.hpp"
 
 // -----------------------------------------------------------------------------
 // Stack Dump methods
@@ -77,8 +78,7 @@ var_t get_local_var(env_t *env, int offset) {
 void create_stack_frame(env_t *env) {
     var_t old_rbp =  set_var_val(lisp_int32, {.lisp_int32 = env->data_stack.rbp});
     push_stack(env, old_rbp);
-    // with the recursive interpere method, i don't need to push rip
-    // the rbp will be moved to the position rightnow later on
+    env->data_stack.rbp = env->data_stack.rsp;
     return;
 }
 
@@ -130,6 +130,9 @@ void add_func_call_stack(env_t *env, func_t *func_template) {
         }
         if (target->scope_level > instance->scope_level) {
             target = target->static_parent;
+            if (target == target->static_parent) {
+                break;
+            }
         }
     }
 
@@ -193,8 +196,12 @@ var_t ask_symbol(env_t *env, std::string* id_name) {
 }
 
 var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
-    printf("next\n");
-    int next_func_rbp = env->data_stack.rsp;
+    create_stack_frame(env);
+    
+    printf("start push list\n");
+    dump_data_stack(env);
+    dump_func_stack(env);
+    printf("\n======================\n");
 
     // * First step:
     // * push all list into stack
@@ -202,22 +209,15 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     while (node != NULL) {
         print_node(node);
         printf("\n");
-        printf("next rbp: %d\n", next_func_rbp);
-        dump_data_stack(env);
-        dump_func_stack(env);
         var_t val_to_push;
 
         if (node->child != NULL) {
             // if the node is a compound expression
-
             if (allow_exp_arg) {
-                // just push the AST node into the stack as the arugment
+                // just push the AST node into the stack as the argument
                 val_to_push.ast_node_ptr = node;    // mask of pointer is 0x00, so it's fine to not to use set_val function
-
             } else {
                 // interpret the node and push the result into  stack
-
-                create_stack_frame(env);
                 // peek next to know should it allow_exp_arg
                 bool next_allow_expr = false;
                 if (node->child->child == NULL && type_check(node->child->val, lisp_ptr)) {
@@ -240,55 +240,64 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
 
     //* Step 2:
     //* function evoke
-    env->data_stack.rbp = next_func_rbp;    // mov rbp 
-
     var_t first = get_local_var(env, 1);                    // fetch first item and do type checking
 
-    // 
+    // ! test function
+    printf("end push list\n");
     dump_data_stack(env);
-    printf("fitst:\n");
-    print_var_val(first);
-    printf("\n");
+    dump_func_stack(env);
+    printf("\n======================\n");
+
     if (!type_check(first, lisp_ptr)) {
         // ! error
         printf("the first item is not callable\n");
         return {};
     }
 
-    func_t *func_to_call = (func_t*)first.lisp_ptr;        // first argument is the function to call
-    add_func_call_stack(env, func_to_call);                // clone this function and push into funccall stack
+    add_func_call_stack(env, (func_t*)first.lisp_ptr);   // clone this function and push into funccall stack
     func_t *instance = get_top_func(env);
-
-    dump_func_stack(env);
-    printf("instance: %p\n", instance);
 
     var_t result;
     if (instance->is_native) {
         instance->body.native_body(instance, env);   // natives should release frame inside
         result = env->result;                        // fetch result from result register in env
-        release_stack_frame(env);
     } else {
         result = interpret_ast(instance->body.ast_body, env, false);
-        release_stack_frame(env);
     }
 
+    //* Step 3:
+    //* return function
+    release_stack_frame(env);
+    pop_func_stack(env);
     return result;
 }
 
-var_t execute_main(func_t *lisp_main, env_t *env) {
-    AST_node *root = lisp_main->body.ast_body;
+void execute_main(AST_node *root, env_t *env) {
+    func_t *main_template = (func_t*)&LISP_NATIVE_FUNC_MAIN_INFO;
+    main_template->scope_level = 0;
+    main_template->name = new std::string("lisp_main");
+    func_t *main_instance = clone_func(main_template);
 
     // prepare init env
     env->data_stack.rsp = -1;
-    env->data_stack.rbp = 0;
+    env->data_stack.rbp = -1;
     env->func_stack.rsp = -1;
-    create_stack_frame(env);
+    // create_stack_frame(env);
 
-    lisp_main->scope_level = 0;
-    lisp_main->name = new std::string("lisp_main");
-    func_t *instance_main = clone_func(lisp_main);
+    // // push main func into stack (the main func aka exit will be executed when the program is over)
+    // push_stack(env, set_var_val(lisp_ptr, {.func_ptr = main_instance}));
+
+    // push func manually. don't search for static_parent 
+    main_instance->static_parent = main_instance;
     env->func_stack.rsp += 1;
-    env->func_stack.stack[env->func_stack.rsp] = instance_main;
+    env->func_stack.stack[env->func_stack.rsp] = main_instance;
 
-    return interpret_ast(root, env, false);
+    dump_data_stack(env);
+    dump_func_stack(env);
+    printf("\n======================\n");
+
+    AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_INFO, NULL);
+    exit_node->next = root;
+    interpret_ast(exit_node, env, false);
+    return;
 }
