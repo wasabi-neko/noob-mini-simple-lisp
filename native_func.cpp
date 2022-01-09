@@ -59,7 +59,7 @@ void LISP_NATIVE_FUNC_BODY_PRINT_BOOL(func_t *self, env_t *env) {
     else
         printf("#f\n");
 
-    env->result = set_var_val(lisp_nil, {._content = 0});
+    env->result = set_var_val(lisp_nil, {._content = 0});       // return nil
 }
 
 void LISP_NATIVE_FUNC_BODY_PRINT_NUM(func_t *self, env_t *env) {
@@ -69,20 +69,37 @@ void LISP_NATIVE_FUNC_BODY_PRINT_NUM(func_t *self, env_t *env) {
     assert_type(env, lisp_int32, var);
     printf("%d\n", var.lisp_int32);
 
-    env->result = set_var_val(lisp_nil, {._content = 0});
+    env->result = set_var_val(lisp_nil, {._content = 0});       // return nil
 }
 
 void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
     assert_argc(env, self, argc_given);
 
-    env->result = set_var_val(lisp_nil, {._content = 0});
+    bool condition;
+    var_t arg1 = get_local_var(env, 2);
+    if (type_check(arg1, lisp_ast_ptr)) {
+        interpret_ast(get_ast_ptr(arg1)->child, env, false);
+        assert_type(env, lisp_bool, env->result);
+        condition = env->result.lisp_bool;
+    } else {
+        assert_type(env, lisp_bool, arg1);
+        condition = arg1.lisp_bool;
+    }
+
+    var_t choice = get_local_var(env, condition ? 3 : 4);
+
+    if (type_check(choice, lisp_ast_ptr)) {
+        interpret_ast(get_ast_ptr(choice)->child, env, false);
+    } else {
+        env->result = choice;
+    }
 }
 
 void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
     assert_argc(env, self, argc_given);
-
+    //TODO:
     env->result = set_var_val(lisp_nil, {._content = 0});
 }
 
@@ -91,4 +108,8 @@ void LISP_NATIVE_FUNC_BODY_LAMBDA(func_t *self, env_t *env) {
     assert_argc(env, self, argc_given);
 
     env->result = set_var_val(lisp_nil, {._content = 0});
+}
+
+void LISP_NATIVE_FUNC_BODY_PUSH_LAST_ARG(func_t *self, env_t *env) {
+    env->result = env->data_stack.stack[env->data_stack.rsp];
 }

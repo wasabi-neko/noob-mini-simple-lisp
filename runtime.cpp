@@ -15,7 +15,8 @@ void dump_data_stack(env_t *env) {
     for (int i = 0; i <= rsp; i++) {
         printf("%d [", i);
         print_var_val(env->data_stack.stack[i]);
-        printf("]\n");
+        printf("]");
+        printf("\n");
     }
     printf("\n");
 }
@@ -128,7 +129,7 @@ void add_func_call_stack(env_t *env, func_t *func_template) {
 
     if (instance->static_parent == NULL) {
         // !error
-        printf("cannot find static parent for");
+        printf("ERROR cannot find static parent for\n");
         if (instance->name == NULL) {
             printf("NULL\n");
         } else {
@@ -203,7 +204,8 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
             // if the node is a compound expression
             if (allow_exp_arg) {
                 // just push the AST node into the stack as the argument
-                val_to_push.ast_node_ptr = node;    // mask of pointer is 0x00, so it's fine to not to use set_val function
+                print_node(node);
+                val_to_push = set_var_val(lisp_ast_ptr, {.lisp_ptr = node});
             } else {
                 // interpret the node and push the result into  stack
                 // peek next to know should it allow_exp_arg
@@ -284,6 +286,7 @@ void execute_main(AST_node *root, env_t *env) {
 
     AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_INFO, NULL);
     exit_node->next = root;
+    graph_AST(exit_node);
     interpret_ast(exit_node, env, false);
     return;
 }

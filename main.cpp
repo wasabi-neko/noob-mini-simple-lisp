@@ -10,8 +10,8 @@ env_t runtime_env;
 int main(int argc, char *argv[]) {
     yyparse();
 
-    graph_AST(lisp_root);
-    printf("\n\n");
+    // graph_AST(lisp_root);
+    // printf("\n\n");
 
     execute_main(lisp_root, &runtime_env);
     return 0;

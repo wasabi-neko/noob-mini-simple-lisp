@@ -1,3 +1,4 @@
+#include "AST.hpp"
 #include "type.hpp"
 
 // -----------------------------------------------------------------------------
@@ -13,6 +14,10 @@ bool type_check(const var_t var, enum var_types type) {
     return !((var._content & tag_mask) ^ (type_mask)type);
 }
 
+AST_node *get_ast_ptr(const var_t var) {
+    return (AST_node *)(var._content ^ (type_mask)lisp_ast_ptr);
+}
+
 enum var_types get_type(const var_t var) {
     if (type_check(var, lisp_nil)) {
         return lisp_nil;
@@ -22,6 +27,8 @@ enum var_types get_type(const var_t var) {
         return lisp_bool;
     } else if (type_check(var, lisp_int32)) {
         return lisp_int32;
+    } else if (type_check(var, lisp_ast_ptr)) {
+        return lisp_ast_ptr;
     } else if (type_check(var, lisp_ptr)) {
         return lisp_ptr;
     }
@@ -42,6 +49,8 @@ void print_type_str(enum var_types type) {
     case lisp_int32:
         printf("int32");
         break;
+    case lisp_ast_ptr:
+        printf("ast_ptr");
     case lisp_ptr:
         printf("ptr");
         break;
@@ -63,11 +72,14 @@ void print_var_val(const var_t var) {
         printf("sym");
         break;
     case lisp_bool:
-        printf("%d", var.lisp_bool);
+        printf("bool %d", var.lisp_bool);
         break;
     case lisp_int32:
-        printf("%d", var.lisp_int32);
+        printf("int %d", var.lisp_int32);
         break;
+    case lisp_ast_ptr:
+        printf("%p -> ", var.lisp_ptr);
+        print_node(get_ast_ptr(var));
     case lisp_ptr:
         printf("%p", var.lisp_ptr);
         break;
@@ -102,6 +114,9 @@ func_t *clone_func(func_t *func) {
     clone->argc = func->argc;
     clone->static_parent = func->static_parent;
     clone->id_map = new std::map<std::string, int>();
+    if (func->id_map != NULL) {
+       clone->id_map->insert(func->id_map->begin(), func->id_map->end());
+    }
     clone->runtime_rbp = -1;
     clone->body = func->body;
     return clone;

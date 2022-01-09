@@ -53,6 +53,8 @@ DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), true, 
 DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), false, 1)
 DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), false, 1)
 
+DEFINE_LISP_NATIVE_FUNC_INFO(_PUSH_LAST_ARG, _lisp_native_name_string("push-last-arg"), false, -1)// for the entry of user-define lambda
+
 /**
  * nf stands for Native Function
  **/

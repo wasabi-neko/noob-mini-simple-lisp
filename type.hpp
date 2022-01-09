@@ -27,27 +27,28 @@ typedef void (*native_func_body_t)(func_t *self, env_t *env);
  * |11...| 48 bit ptr |
  */
 typedef enum TYPE_MASK {
-    tag_mask   = 0xff00000000000000,
-    nil_mask   = 0x1000000000000000,
-    symbol_mask= 0x2000000000000000,
-    bool_mask  = 0x3000000000000000,
-    int32_mask = 0x4000000000000000,
-    ptr48_mask = 0x0000000000000000,
+    tag_mask     = 0xff00000000000000,
+    ptr48_mask   = 0x0000000000000000,
+    int32_mask   = 0x1000000000000000,
+    bool_mask    = 0x2000000000000000,
+    nil_mask     = 0x3000000000000000,
+    symbol_mask  = 0x4000000000000000,
+    ast_ptr_mask = 0x5000000000000000,
 } type_mask;
 
 enum var_types {
+    lisp_ptr = ptr48_mask,
+    lisp_int32 = int32_mask,
+    lisp_bool = bool_mask,
     lisp_nil = nil_mask,
     lisp_symbol = symbol_mask,
-    lisp_bool = bool_mask,
-    lisp_int32 = int32_mask,
-    lisp_ptr = ptr48_mask,
+    lisp_ast_ptr  = ast_ptr_mask,
 };
 typedef union LISP_VAR_TYPE{
     int64_t _content;
     bool lisp_bool;
     int lisp_int32;
     void *lisp_ptr;
-    struct AST_NODE *ast_node_ptr;
     func_t *func_ptr;
 } var_t;
 
@@ -60,6 +61,7 @@ void print_var_val(const var_t);
 // int get_int_val(const var_t);       // ? maybe i don't need this 
 // bool get_bool_val(const var_t);
 // func_t *get_func_ptr(const var_t);
+AST_node *get_ast_ptr(const var_t);
 
 
 // -----------------------------------------------------------------------------
