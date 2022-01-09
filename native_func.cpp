@@ -14,36 +14,53 @@ void LISP_NATIVE_FUNC_BODY_MAIN(func_t *self, env_t *env) {
     return;
 }
 
-#define DEFINE_SINGLE_OPERATION_FUNC_BODY(name, type, lambda)                         \
-void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                         \
-    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;                   \
-    if (self->argc != -1 && argc_given != self->argc) {                               \
-        /*// ! error*/                                                                \
-        printf("%d argument need, but %d given\n", self->argc, argc_given);           \
-        exit(-1);                                                                     \
-        return;                                                                       \
-    }                                                                                 \
-    /* set first arg */                                                               \
-    var_t result = env->data_stack.stack[env->data_stack.rbp + 2];                    \
-    /* for every arg */                                                               \
-    for (int i = env->data_stack.rbp + 3; i <= env->data_stack.rsp; i++) {            \
-        var_t arg = env->data_stack.stack[i];                                         \
-        if (type_check(arg, type)) {                                                  \
-            lambda                                                                    \
-        } else {                                                                      \
-            /*// ! error*/                                                            \
-            printf("error: type error\n");                                            \
-            print_var_val(env->data_stack.stack[i]);                                  \
-            fflush(stdout);                                                           \
-            exit(-1);                                                                 \
-            return;                                                                   \
-        }                                                                             \
-    }                                                                                 \
-    env->result = set_var_val(type, {.type = result.type});                           \
-    return;                                                                           \
-}                                                                                     \
+#define DEFINE_SINGLE_OPERATION_FUNC_BODY(name, param_type, result_type, init_val, iter_lambda)   \
+void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                                     \
+    int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;                               \
+    /*argc check*/                                                                                \
+    if (self->argc != -1 && argc_given != self->argc) {                                           \
+        /*// ! error*/                                                                            \
+        printf("%d argument need, but %d given\n", self->argc, argc_given);                       \
+        exit(-1);                                                                                 \
+        return;                                                                                   \
+    }                                                                                             \
+                                                                                                  \
+    /*type check*/                                                                                \
+    var_t *arg = &env->data_stack.stack[env->data_stack.rbp + 1];                                 \
+    for (int i = 1; i <= argc_given; i++) {                                                       \
+        if (!type_check(arg[i], param_type)) {                                                    \
+            /*// ! error*/                                                                        \
+            printf("error: type error\n");                                                        \
+            print_var_val(env->data_stack.stack[i]);                                              \
+            fflush(stdout);                                                                       \
+            exit(-1);                                                                             \
+            return;                                                                               \
+        }                                                                                         \
+    }                                                                                             \
+                                                                                                  \
+    /* for every arg from arg[2] to end */                                                        \
+    var_t result = init_val;                                                                      \
+    for (int i = 2; i <= argc_given; i++) {                                                       \
+        iter_lambda                                                                               \
+    }                                                                                             \
+    env->result = set_var_val(result_type, {.result_type = result.result_type});                  \
+    return;                                                                                       \
+}                                                                              
  
-DEFINE_SINGLE_OPERATION_FUNC_BODY(_ADD, lisp_int32, {result.lisp_int32 += arg.lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_ADD, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 += arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_MIN, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 -= arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_MUL, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 *= arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_DIV, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 += arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_MOD, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 %= arg[i].lisp_int32;});
+
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_GT,  lisp_int32, lisp_bool, {}, {result.lisp_bool = arg[1].lisp_int32 > arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_LT,  lisp_int32, lisp_bool, {}, {result.lisp_bool = arg[1].lisp_int32 < arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_EQU, lisp_int32, lisp_bool, {.lisp_bool=true}, 
+                                                               {result.lisp_bool &= arg[i-1].lisp_int32 == arg[i].lisp_int32;});
+
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_AND, lisp_bool, lisp_bool, arg[1], {result.lisp_bool &= arg[i].lisp_bool;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_OR,  lisp_bool, lisp_bool, arg[1], {result.lisp_bool |= arg[i].lisp_bool;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_NOT, lisp_bool, lisp_bool, {.lisp_bool = !arg[1].lisp_bool}, {});
 
 
 void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
