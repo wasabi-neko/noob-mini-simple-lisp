@@ -70,6 +70,7 @@ typedef union FUNCTION_BODY_T {
 
 typedef struct LISP_FUNCTION_TYPE {
     bool is_native;
+    bool allow_exp_arg;
     std::string *name;                          // not neccesary for runtime
     int scope_level;                          // the lexical_level of the function. for determind static parent in runtime
     int argc;                                   // -1 if not limited

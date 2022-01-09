@@ -95,6 +95,7 @@ func_t *new_func(bool is_native, std::string *name, int level, int argc, std::ma
 func_t *clone_func(func_t *func) {
     func_t *clone = (func_t*) malloc(sizeof(func_t));
     clone->is_native = func->is_native;
+    clone->allow_exp_arg = func->allow_exp_arg;
     clone->name = func->name;
     clone->scope_level = func->scope_level;
     clone->argc = func->argc;

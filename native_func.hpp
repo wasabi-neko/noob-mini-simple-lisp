@@ -16,10 +16,10 @@ typedef void (*native_func_body_t)(func_t *self, env_t *env);
 //       static_parent = NULL;
 //       body = natvie_func;
 //  }
-#define DEFINE_LISP_NATIVE_FUNC_INFO(FUNC_ID, name, argc)            \
+#define DEFINE_LISP_NATIVE_FUNC_INFO(FUNC_ID, name, allow_expr,argc)            \
     void LISP_NATIVE_FUNC_BODY##FUNC_ID(func_t *self, env_t *env);   \
     const func_t LISP_NATIVE_FUNC##FUNC_ID##_INFO = {                \
-        true, name, -1, argc,                                        \
+        true, allow_expr, name, -1, argc,                                        \
         NULL, NULL, -1,                                              \
         {.native_body = LISP_NATIVE_FUNC_BODY##FUNC_ID}              \
     };                                                               \
@@ -30,16 +30,16 @@ inline std::string *_lisp_native_name_string(const char *name) {
     return str;
 }
 
-DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), -1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), false, -1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_MIN, _lisp_native_name_string("minus"),-1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_MUL, _lisp_native_name_string("multiply"),-1)
 // DEFINE_LISP_NATIVE_FUNC_INFO(_DIV, _lisp_native_name_string("division"),-1)
 
-DEFINE_LISP_NATIVE_FUNC_INFO(_IF, _lisp_native_name_string("if"), 3)
-DEFINE_LISP_NATIVE_FUNC_INFO(_DEFINE, _lisp_native_name_string("define"), 2)
-DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), -1)   // argc: at least 2
-DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), 2)
-DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), 2)
+DEFINE_LISP_NATIVE_FUNC_INFO(_IF, _lisp_native_name_string("if"), true, 3)
+DEFINE_LISP_NATIVE_FUNC_INFO(_DEFINE, _lisp_native_name_string("define"), true, 2)
+DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), true, -1)   // argc: at least 2
+DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), false, 2)
+DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), false, 2)
 
 /**
  * nf stands for Native Function

@@ -1,7 +1,6 @@
 #ifndef INCLUDE_RUNTIME_HH
 #define INCLUDE_RUNTIME_HH
 
-#include <stack>
 #include "type.hpp"
 
 #define RUNTIME_STACK_SIZE_MAX 10000
@@ -49,7 +48,9 @@ func_t *get_top_func(env_t *);
 void add_func_call_stack(env_t *, func_t *func_template);
 void pop_func_stack(env_t *);
 
+// Runtime Methods
 var_t ask_symbol(env_t *, std::string*);
+void interpret_ast(AST_node *, env_t *);
 
 
 #endif
