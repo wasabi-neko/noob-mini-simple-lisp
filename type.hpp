@@ -72,7 +72,16 @@ typedef union FUNCTION_BODY_T {
         native_func_body_t native_body;
 } func_body_t;
 
-typedef std::map<std::string, int> id_map_t;
+typedef struct VAR_MEMORY {
+    // dynamic: which is created by using define;
+    // static: which is lambda parameter
+    bool is_dynamic;
+    union {
+        int offset;     // static: memory is inside stack, place at  rbp + offset
+        var_t dyn_var;  // dynamic: memory is allocated in heap
+    }memory;
+} var_memory_t;
+typedef std::map<std::string, var_memory_t> id_map_t;
 
 typedef struct LISP_FUNCTION_TYPE {
     bool is_native;

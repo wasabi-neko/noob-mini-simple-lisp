@@ -99,7 +99,6 @@ func_t *get_top_func(env_t *env) {
 }
 
 // push function and add static link to it
-// * you should move rbp to ready state before use this method
 void add_func_call_stack(env_t *env, func_t *func_template) {
     if (env->func_stack.rsp >= RUNTIME_FUNC_CALL_STACK_MAX) {
         raise_stackoverflow_error(env);
@@ -121,19 +120,16 @@ void add_func_call_stack(env_t *env, func_t *func_template) {
         }
         if (target->scope_level > instance->scope_level) {
             target = target->static_parent;
-            if (target == target->static_parent) {
-                break;
-            }
         }
     }
 
     if (instance->static_parent == NULL) {
         // !error
-        printf("ERROR cannot find static parent for\n");
+        printf("ERROR cannot find static parent for");
         if (instance->name == NULL) {
             printf("NULL\n");
         } else {
-            printf("%s", instance->name->data());
+            printf("%s\n", instance->name->data());
         } 
         return;
     }
@@ -162,7 +158,7 @@ void pop_func_stack(env_t *env) {
 // -----------------------------------------------------------------------------
 var_t ask_symbol(env_t *env, std::string* id_name) {
     func_t *target = env->func_stack.stack[env->func_stack.rsp];    // from top
-    int offset;
+    var_memory_t var_memory;
 
     while (target != NULL) {
         // if target don't have id_map, or the id cannot be found in the id_map
@@ -171,7 +167,7 @@ var_t ask_symbol(env_t *env, std::string* id_name) {
             continue;
         }
 
-        offset = target->id_map->at(*id_name);
+        var_memory = target->id_map->at(*id_name);
         break;
     }
 
@@ -180,8 +176,15 @@ var_t ask_symbol(env_t *env, std::string* id_name) {
         raise_name_error(env, id_name);
     }
 
-    int index = target->runtime_rbp + offset;
-    return env->data_stack.stack[index];
+    var_t result;
+    if (var_memory.is_dynamic) {
+        result = var_memory.memory.dyn_var;
+    } else {
+        int index = target->runtime_rbp + var_memory.memory.offset;
+        result = env->data_stack.stack[index];
+    }
+
+    return result;
 }
 
 var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
@@ -263,8 +266,8 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
 void execute_main(AST_node *root, env_t *env) {
     func_t *main_template = (func_t*)&LISP_NATIVE_FUNC_MAIN_INFO;
     main_template->scope_level = 0;
-    main_template->name = new std::string("lisp_main");
-    func_t *main_instance = clone_func(main_template);
+    main_template->name = new std::string("lisp_main_func_scope");
+    func_t *global_scope = clone_func(main_template);
 
     // prepare init env
     env->data_stack.rsp = -1;
@@ -276,15 +279,15 @@ void execute_main(AST_node *root, env_t *env) {
     // push_stack(env, set_var_val(lisp_ptr, {.func_ptr = main_instance}));
 
     // push func manually. don't search for static_parent 
-    main_instance->static_parent = main_instance;
+    global_scope->static_parent = NULL;
     env->func_stack.rsp += 1;
-    env->func_stack.stack[env->func_stack.rsp] = main_instance;
+    env->func_stack.stack[env->func_stack.rsp] = global_scope;
 
     dump_data_stack(env);
     dump_func_stack(env);
     printf("\n======================\n");
 
-    AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_INFO, NULL);
+    AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_EXIT_INFO, NULL);
     exit_node->next = root;
     graph_AST(exit_node);
     interpret_ast(exit_node, env, false);

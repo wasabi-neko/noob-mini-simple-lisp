@@ -10,6 +10,11 @@ AST_node *create_ast_nf_node(const func_t *native_info, func_t *parent) {
 }
 
 void LISP_NATIVE_FUNC_BODY_MAIN(func_t *self, env_t *env) {
+    printf("ERROR: the lisp_main_scope function should only used as scope instead of being evoked\n");
+    exit(-1);
+}
+
+void LISP_NATIVE_FUNC_BODY_MAIN_EXIT(func_t *self, env_t *env) {
     printf("EXIT");
     exit(0);
 }
@@ -105,6 +110,7 @@ void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
         printf("Error: not static parent!\n");
         exit(-1);
     }
+    // TODO: id_map add dynamic
 
     env->result = set_var_val(lisp_nil, {._content = 0});
 }

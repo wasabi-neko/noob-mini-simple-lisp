@@ -32,6 +32,7 @@ inline std::string *_lisp_native_name_string(const char *name) {
 }
 
 DEFINE_LISP_NATIVE_FUNC_INFO(_MAIN, _lisp_native_name_string("lisp_main"), false, -1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_MAIN_EXIT, _lisp_native_name_string("lisp_main_exit"), false, -1)
 
 DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), false, -3)
 DEFINE_LISP_NATIVE_FUNC_INFO(_MIN, _lisp_native_name_string("minus"), false, 2)

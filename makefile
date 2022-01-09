@@ -33,3 +33,6 @@ clean:
 
 test: $(EXEC)
 	./$(EXEC) < ./test/test1.lisp
+
+test-all: $(EXEC)
+	-bash test.bash
