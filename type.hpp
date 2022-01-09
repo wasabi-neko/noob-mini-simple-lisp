@@ -50,12 +50,14 @@ typedef union LISP_VAR_TYPE{
 } var_t;
 
 var_t set_var_val(enum var_types, var_t val);
-enum var_types get_type(const var_t, enum var_types);
 bool type_check(const var_t, enum var_types);
+enum var_types get_type(const var_t);
+void print_type_str(enum var_types);
+void print_var_val(const var_t);
 
-int get_int_val(const var_t);       // ? maybe i don't need this 
-bool get_bool_val(const var_t);
-func_t *get_func_ptr(const var_t);
+// int get_int_val(const var_t);       // ? maybe i don't need this 
+// bool get_bool_val(const var_t);
+// func_t *get_func_ptr(const var_t);
 
 
 // -----------------------------------------------------------------------------

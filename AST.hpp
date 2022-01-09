@@ -46,5 +46,6 @@ void append_next(AST_node *root, AST_node *child);
 
 void print_node(AST_node *node);
 void visit(AST_node *);
+void graph_AST(AST_node *);
 
 #endif

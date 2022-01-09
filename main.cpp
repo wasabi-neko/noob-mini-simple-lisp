@@ -10,7 +10,8 @@ var_t interpret(AST_node*node, env_t *env);
 int main(int argc, char *argv[]) {
     yyparse();
 
-    visit(lisp_main.body.ast_body);
+    // visit(lisp_main.body.ast_body);
+    graph_AST(lisp_main.body.ast_body);
     return 0;
 }
 

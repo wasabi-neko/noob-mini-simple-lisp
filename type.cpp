@@ -12,8 +12,69 @@ bool type_check(const var_t var, enum var_types type) {
     return !((var._content & tag_mask) ^ (type_mask)type);
 }
 
-enum var_types get_type(const var_t);
+enum var_types get_type(const var_t var) {
+    if (type_check(var, lisp_nil)) {
+        return lisp_nil;
+    } else if (type_check(var, lisp_symbol)) {
+        return lisp_symbol;
+    } else if (type_check(var, lisp_bool)) {
+        return lisp_bool;
+    } else if (type_check(var, lisp_int32)) {
+        return lisp_int32;
+    } else if (type_check(var, lisp_ptr)) {
+        return lisp_ptr;
+    }
+    return lisp_nil;
+}
 
+void print_type_str(enum var_types type) {
+    switch (type) {
+    case lisp_nil:
+        printf("nil");
+        break;
+    case lisp_symbol:
+        printf("symbol");
+        break;
+    case lisp_bool:
+        printf("bool");
+        break;
+    case lisp_int32:
+        printf("int32");
+        break;
+    case lisp_ptr:
+        printf("ptr");
+        break;
+    default:
+        printf("undefine");
+        break;
+    }
+    return;
+}
+
+void print_var_val(const var_t var) {
+    enum var_types type = get_type(var);
+    switch (type) {
+    case lisp_nil:
+        printf("nil");
+        break;
+    case lisp_symbol:
+        // printf("%s", (static_cast<std::string*>(var.lisp_ptr))->data());
+        printf("sym");
+        break;
+    case lisp_bool:
+        printf("%d", var.lisp_bool);
+        break;
+    case lisp_int32:
+        printf("%d", var.lisp_int32);
+        break;
+    case lisp_ptr:
+        printf("%p", var.lisp_ptr);
+        break;
+    default:
+        printf("undefine");
+        break;
+    }
+}
 
 // -----------------------------------------------------------------------------
 // Function type

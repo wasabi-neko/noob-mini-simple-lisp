@@ -35,7 +35,7 @@ print-num  {return PRINT_NUM;}
 print-bool {return PRINT_BOOL;}
 
 if     {return IF;}
-lambda {return FUN;}
+lambda {return LAMBDA;}
 define {return DEFINE;}
 
 #t {
