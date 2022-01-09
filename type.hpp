@@ -74,8 +74,8 @@ typedef struct LISP_FUNCTION_TYPE {
     bool is_native;
     bool allow_exp_arg;
     std::string *name;                          // not neccesary for runtime
-    int scope_level;                          // the lexical_level of the function. for determind static parent in runtime
-    int argc;                                   // -1 if not limited
+    int scope_level;                            // the lexical_level of the function. for determind static parent in runtime
+    int argc;                                   // -1 means at least 0; -2 meas at least 1
     std::map<std::string, int> *id_map;               // map id name to stack offset. (contain args_name and local variable)
     struct LISP_FUNCTION_TYPE *static_parent;
     int runtime_rbp;                            // the rbp position in it's stack frame

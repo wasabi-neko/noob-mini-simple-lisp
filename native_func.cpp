@@ -18,11 +18,21 @@ void LISP_NATIVE_FUNC_BODY_MAIN(func_t *self, env_t *env) {
 void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                                     \
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;                               \
     /*argc check*/                                                                                \
-    if (self->argc != -1 && argc_given != self->argc) {                                           \
-        /*// ! error*/                                                                            \
-        printf("%d argument need, but %d given\n", self->argc, argc_given);                       \
-        exit(-1);                                                                                 \
-        return;                                                                                   \
+    if (self->argc < 0) {                                                                         \
+        if (argc_given < (self->argc + 1) * -1) {                                                 \
+            /*//! error*/                                                                         \
+            printf("at least %d argument need, but %d given\n",                                   \
+                (self->argc+1)*-1, argc_given);                                                   \
+            exit(-1);                                                                             \  
+            return;                                                                               \   
+        }                                                                                         \
+    } else {                                                                                      \
+        if (argc_given != self->argc) {                                                           \
+            /*// ! error*/                                                                        \
+            printf("%d argument need, but %d given\n", self->argc, argc_given);                   \
+            exit(-1);                                                                             \
+            return;                                                                               \
+        }                                                                                         \
     }                                                                                             \
                                                                                                   \
     /*type check*/                                                                                \
@@ -50,7 +60,7 @@ void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                   
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_ADD, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 += arg[i].lisp_int32;});
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_MIN, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 -= arg[i].lisp_int32;});
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_MUL, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 *= arg[i].lisp_int32;});
-DEFINE_SINGLE_OPERATION_FUNC_BODY(_DIV, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 += arg[i].lisp_int32;});
+DEFINE_SINGLE_OPERATION_FUNC_BODY(_DIV, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 /= arg[i].lisp_int32;});
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_MOD, lisp_int32, lisp_int32, arg[1], {result.lisp_int32 %= arg[i].lisp_int32;});
 
 DEFINE_SINGLE_OPERATION_FUNC_BODY(_GT,  lisp_int32, lisp_bool, {}, {result.lisp_bool = arg[1].lisp_int32 > arg[i].lisp_int32;});

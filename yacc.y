@@ -48,6 +48,7 @@ AST_node *lisp_root;
 %token '='
 %token AND
 %token OR
+%token NOT
 
 %type <node> exprs 
 %type <node> expr
@@ -105,15 +106,16 @@ buildin_func : PRINT_NUM  {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_PRINT_NUM_I
              ;
 
 operator     : '+'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '-'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '*'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '/'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | MOD        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '>'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '<'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | '='        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | AND        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
-             | OR         {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_ADD_INFO, NULL);}
+             | '-'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_MIN_INFO, NULL);}
+             | '*'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_MUL_INFO, NULL);}
+             | '/'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_DIV_INFO, NULL);}
+             | MOD        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_MOD_INFO, NULL);}
+             | '>'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_GT_INFO, NULL);}
+             | '<'        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_LT_INFO, NULL);}
+             | '='        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_EQU_INFO, NULL);}
+             | AND        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_AND_INFO, NULL);}
+             | OR         {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_OR_INFO, NULL);}
+             | NOT        {$$ = create_ast_nf_node(&LISP_NATIVE_FUNC_NOT_INFO, NULL);}
              ;
 
 %%

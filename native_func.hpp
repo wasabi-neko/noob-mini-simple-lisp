@@ -33,23 +33,23 @@ inline std::string *_lisp_native_name_string(const char *name) {
 
 DEFINE_LISP_NATIVE_FUNC_INFO(_MAIN, _lisp_native_name_string("lisp_main"), false, -1)
 
-DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), false, -1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_ADD, _lisp_native_name_string("add"), false, -3)
 DEFINE_LISP_NATIVE_FUNC_INFO(_MIN, _lisp_native_name_string("minus"), false, 2)
-DEFINE_LISP_NATIVE_FUNC_INFO(_MUL, _lisp_native_name_string("multiply"), false, -1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_MUL, _lisp_native_name_string("multiply"), false, -3)
 DEFINE_LISP_NATIVE_FUNC_INFO(_DIV, _lisp_native_name_string("divide"), false, 2)
 DEFINE_LISP_NATIVE_FUNC_INFO(_MOD, _lisp_native_name_string("modulus"), false, 2)
 
 DEFINE_LISP_NATIVE_FUNC_INFO(_GT, _lisp_native_name_string("greater-than"), false, 2)
 DEFINE_LISP_NATIVE_FUNC_INFO(_LT, _lisp_native_name_string("less-than"), false, 2)
-DEFINE_LISP_NATIVE_FUNC_INFO(_EQU, _lisp_native_name_string("equal"), false, -1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_EQU, _lisp_native_name_string("equal"), false, -3)
 
-DEFINE_LISP_NATIVE_FUNC_INFO(_AND, _lisp_native_name_string("and"), false, -1)
-DEFINE_LISP_NATIVE_FUNC_INFO(_OR, _lisp_native_name_string("or"), false, -1)
+DEFINE_LISP_NATIVE_FUNC_INFO(_AND, _lisp_native_name_string("and"), false, -3)
+DEFINE_LISP_NATIVE_FUNC_INFO(_OR, _lisp_native_name_string("or"), false, -3)
 DEFINE_LISP_NATIVE_FUNC_INFO(_NOT, _lisp_native_name_string("not"), false, 1)
 
 DEFINE_LISP_NATIVE_FUNC_INFO(_IF, _lisp_native_name_string("if"), true, 3)
 DEFINE_LISP_NATIVE_FUNC_INFO(_DEFINE, _lisp_native_name_string("define"), true, 2)
-DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), true, -1)   // argc: at least 2
+DEFINE_LISP_NATIVE_FUNC_INFO(_LAMBDA, _lisp_native_name_string("lambda"), true, -3)         // argc: at least 2
 DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_BOOL, _lisp_native_name_string("print-bool"), false, 2)
 DEFINE_LISP_NATIVE_FUNC_INFO(_PRINT_NUM, _lisp_native_name_string("print-num"), false, 2)
 

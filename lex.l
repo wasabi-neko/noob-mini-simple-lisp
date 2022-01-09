@@ -30,6 +30,7 @@ complex_id {letter}+({digit}|{letter}|\-)+
 mod {return MOD;}
 and {return AND;}
 or  {return OR;}
+not {return NOT;}
 
 print-num  {return PRINT_NUM;}
 print-bool {return PRINT_BOOL;}
