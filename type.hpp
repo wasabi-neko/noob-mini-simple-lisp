@@ -62,6 +62,7 @@ void print_var_val(const var_t);
 // bool get_bool_val(const var_t);
 // func_t *get_func_ptr(const var_t);
 AST_node *get_ast_ptr(const var_t);
+std::string *get_symbol_ptr(const var_t);
 
 
 // -----------------------------------------------------------------------------

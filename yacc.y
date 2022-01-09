@@ -85,7 +85,7 @@ single_val : INT_VAL    {$$ = new_ast_node(NULL, set_var_val(lisp_int32, {.lisp_
 
 var_name   : ID {
                     std::string*  id_str = new std::string($1);
-                    var_t var = set_var_val(lisp_symbol, {.lisp_ptr = 0});
+                    var_t var = set_var_val(lisp_symbol, {.lisp_ptr = id_str});
                     $$ = new_ast_node(id_str, var);
                 }
            ;

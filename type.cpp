@@ -18,6 +18,10 @@ AST_node *get_ast_ptr(const var_t var) {
     return (AST_node *)(var._content ^ (type_mask)lisp_ast_ptr);
 }
 
+std::string *get_symbol_ptr(const var_t var) {
+    return (std::string *)(var._content ^ (type_mask)lisp_symbol);
+}
+
 enum var_types get_type(const var_t var) {
     if (type_check(var, lisp_nil)) {
         return lisp_nil;

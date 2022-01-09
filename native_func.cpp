@@ -92,7 +92,7 @@ void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
         condition = arg1.lisp_bool;
     }
 
-    var_t choice = get_local_var(env, condition ? 3 : 4);
+    var_t choice = get_local_var(env, condition ? 3 : 4);   // chose if arg1 then arg2 else arg3
 
     if (type_check(choice, lisp_ast_ptr)) {
         interpret_ast(get_ast_ptr(choice)->child, env, false);
@@ -110,7 +110,29 @@ void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
         printf("Error: not static parent!\n");
         exit(-1);
     }
-    // TODO: id_map add dynamic
+
+    var_t arg1 = get_local_var(env, 2);
+    assert_type(env, lisp_symbol, arg1);
+    std::string *name = get_symbol_ptr(arg1);
+
+    var_t arg2 = get_local_var(env, 3);
+    var_t val;
+    if (type_check(arg2, lisp_ast_ptr)) {
+        interpret_ast(get_ast_ptr(arg2)->child, env, false);
+        val = env->result;
+    } else {
+        val = arg2;
+    }
+
+    var_memory_t var_mem = {.is_dynamic = true, .memory = {.dyn_var=val}};
+    if (scope->id_map == NULL)
+        scope->id_map = new id_map_t();
+
+    (*scope->id_map)[*name] = var_mem;      // copy by value
+
+    printf("\nDEBUG: Mapping %s to", name->data());
+    print_var_val(val);
+    printf("\n");
 
     env->result = set_var_val(lisp_nil, {._content = 0});
 }

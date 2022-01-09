@@ -193,7 +193,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     printf("start push list\n");
     dump_data_stack(env);
     dump_func_stack(env);
-    printf("\n======================\n");
+    printf("======================\n\n");
 
     // * First step:
     // * push all list into stack
@@ -220,7 +220,11 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
             }
         } else if (type_check(node->val, lisp_symbol)) {
             // if the node is a symbol
-            val_to_push = ask_symbol(env, node->name);
+            if (allow_exp_arg) {
+                val_to_push = set_var_val(lisp_symbol, {.lisp_ptr = node->val.lisp_ptr});
+            } else {
+                val_to_push = ask_symbol(env, node->name);
+            }
 
         } else {
             // just single value
@@ -239,7 +243,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     printf("end push list\n");
     dump_data_stack(env);
     dump_func_stack(env);
-    printf("\n======================\n");
+    printf("======================\n\n");
 
     if (!type_check(first, lisp_ptr)) {
         raise_not_callable_error(env, first);
@@ -285,7 +289,7 @@ void execute_main(AST_node *root, env_t *env) {
 
     dump_data_stack(env);
     dump_func_stack(env);
-    printf("\n======================\n");
+    printf("======================\n\n");
 
     AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_EXIT_INFO, NULL);
     exit_node->next = root;
