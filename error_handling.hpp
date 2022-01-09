@@ -10,3 +10,5 @@ void raise_not_callable_error(env_t *, var_t the_var);
 void raise_name_error(env_t *, std::string *symbol);
 void raise_argc_error(env_t *, func_t *func, int argc_given);
 void raise_stackoverflow_error(env_t*);
+
+void assert_argc(env_t *, func_t *func, int argc_given);

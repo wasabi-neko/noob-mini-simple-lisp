@@ -56,3 +56,13 @@ void raise_stackoverflow_error(env_t *env) {
     printf("Stack Overflow");
     exit_interpreter(env);
 }
+
+void assert_argc(env_t *env, func_t *func, int argc_given) {
+    if (func->argc < 0) {
+        if (argc_given < (func->argc + 1) * -1)
+            raise_argc_error(env, func, argc_given);
+    } else {
+        if (argc_given != func->argc)
+            raise_argc_error(env, func, argc_given);
+    }
+}

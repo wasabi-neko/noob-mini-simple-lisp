@@ -19,14 +19,7 @@ void LISP_NATIVE_FUNC_BODY_MAIN(func_t *self, env_t *env) {
 void LISP_NATIVE_FUNC_BODY##name (func_t *self, env_t *env) {                                     \
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;                               \
     /*argc check*/                                                                                \
-    if (self->argc < 0) {                                                                         \
-        if (argc_given < (self->argc + 1) * -1) {                                                 \
-        }                                                                                         \
-    } else {                                                                                      \
-        if (argc_given != self->argc)                                                             \
-            raise_argc_error(env, self, argc_given);                                              \
-    }                                                                                             \
-                                                                                                  \
+    assert_argc(env, self, argc_given);                                                           \
     /*type check*/                                                                                \
     var_t *arg = &env->data_stack.stack[env->data_stack.rbp + 1];                                 \
     for (int i = 1; i <= argc_given; i++) {                                                       \
