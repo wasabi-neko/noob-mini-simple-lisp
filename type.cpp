@@ -86,7 +86,7 @@ void print_var_val(const var_t var) {
         break;
     case lisp_ast_ptr:
         printf("%p -> ", var.lisp_ptr);
-        print_node(get_ast_ptr(var));
+        // print_node(get_ast_ptr(var));
         break;
     case lisp_ptr:
         printf("%p", var.lisp_ptr);
