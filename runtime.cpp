@@ -98,6 +98,7 @@ func_t *get_top_func(env_t *env) {
     return env->func_stack.stack[index];
 }
 
+// TODO: there's seems some sort of bug in my static_scope searching
 // push function and add static link to it
 void add_func_call_stack(env_t *env, func_t *func_template) {
     if (env->func_stack.rsp >= RUNTIME_FUNC_CALL_STACK_MAX) {
@@ -295,10 +296,6 @@ void execute_main(AST_node *root, env_t *env) {
     env->data_stack.rsp = -1;
     env->data_stack.rbp = -1;
     env->func_stack.rsp = -1;
-    // create_stack_frame(env);
-
-    // // push main func into stack (the main func aka exit will be executed when the program is over)
-    // push_stack(env, set_var_val(lisp_ptr, {.func_ptr = main_instance}));
 
     // push func manually. don't search for static_parent 
     global_scope->static_parent = NULL;
