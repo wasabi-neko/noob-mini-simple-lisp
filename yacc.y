@@ -71,8 +71,9 @@ expr    : single_val                    {$$ = $1;}
         | var_name                      {$$ = $1;}
         | '(' func_to_call exprs ')'    {
                                             $2->next = $3;
-                                            $$ = new_ast_node(NULL, set_var_val(lisp_nil, {._content = 0}));
+                                            $$ = new_ast_node(NULL, {});
                                             $$->child = $2;
+                                            $$->val = set_var_val(lisp_ast_ptr, {.lisp_ptr = $$});
                                         }
         | '(' ')'                       {
                                             $$ = new_ast_node(NULL, set_var_val(lisp_nil, {._content = 0}));

@@ -11,6 +11,8 @@ var_t set_var_val(enum var_types type, var_t val) {
 
 bool type_check(const var_t var, enum var_types type) {
     // return true if the type tag of the var is equal to the given type
+    if (type == lisp_any)
+        return true;
     return !((var._content & tag_mask) ^ (type_mask)type);
 }
 

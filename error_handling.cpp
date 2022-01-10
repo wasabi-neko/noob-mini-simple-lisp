@@ -29,8 +29,9 @@ void raise_type_error(env_t *env, type_mask type_expect, var_t the_var) {
 
 void raise_not_callable_error(env_t *env, var_t the_var) {
     trace_back(env);
-    printf("Type Error: the value "); print_var_val(the_var);
-    printf(" is not called-able.\n");
+    printf("Type Error: the value: [");
+    print_var_val(the_var);
+    printf("] is not called-able.\n");
     exit_interpreter(env);
 }
 

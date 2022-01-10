@@ -81,26 +81,11 @@ void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
     assert_argc(env, self, argc_given);
 
-    bool condition;
     var_t arg1 = get_local_var(env, 2);
-    if (type_check(arg1, lisp_ast_ptr)) {
-        interpret_ast(get_ast_ptr(arg1)->child, env, false);
-        assert_type(env, lisp_bool, env->result);
-        condition = env->result.lisp_bool;
-    } else {
-        assert_type(env, lisp_bool, arg1);
-        condition = arg1.lisp_bool;
-    }
+    bool condition = get_runtime_var_val(env, arg1, lisp_bool).lisp_bool;
 
-    var_t choice = get_local_var(env, condition ? 3 : 4);   // chose if arg1 then arg2 else arg3
-
-    if (type_check(choice, lisp_ast_ptr)) {
-        AST_node *root = get_ast_ptr(choice)->child;
-        assert_type(env, lisp_ptr, root->val);
-        interpret_ast(root, env, root->val.func_ptr->allow_exp_arg);
-    } else {
-        env->result = choice;
-    }
+    var_t choice = get_local_var(env, condition ? 3 : 4);   // choose if arg1 then arg2 else arg3
+    env->result = get_runtime_var_val(env, choice, lisp_any);
 }
 
 void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
@@ -118,15 +103,7 @@ void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
     std::string *name = get_symbol_ptr(arg1);
 
     var_t arg2 = get_local_var(env, 3);
-    var_t val;
-    if (type_check(arg2, lisp_ast_ptr)) {
-        AST_node *root = get_ast_ptr(arg2)->child;
-        assert_type(env, lisp_ptr, root->val);
-        interpret_ast(root, env, root->val.func_ptr->allow_exp_arg);
-        val = env->result;
-    } else {
-        val = arg2;
-    }
+    var_t val = get_runtime_var_val(env, arg2, lisp_any);
 
     var_memory_t var_mem = {.is_dynamic = true, .memory = {.dyn_var=val}};
     if (scope->id_map == NULL)

@@ -187,9 +187,45 @@ var_t ask_symbol(env_t *env, std::string* id_name) {
     return result;
 }
 
-var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
+var_t get_runtime_var_val(env_t *env, var_t var, enum var_types type) {
+    var_t true_value = var;
+    if (type_check(var, lisp_symbol)) {
+        true_value  = ask_symbol(env, get_symbol_ptr(var));
+    } else if (type_check(var, lisp_ast_ptr)) {
+        interpret_ast(get_ast_ptr(var)->child, env);
+        true_value = env->result;
+    }
+
+    assert_type(env, type, true_value);
+    return true_value;
+}
+
+var_t interpret_ast(AST_node *root, env_t *env) {
+    if (root == NULL) {
+        return set_var_val(lisp_nil, {._content = 0});
+    }
+
+    // * First step:
+    // * push all list into stack
     create_stack_frame(env);
-    
+    AST_node *node = root;
+
+    // * Preprocess: 
+    // * eval the first item in list. to check is it call-able and fetch it's property
+    // eval firs_val if it is compund expression
+    bool allow_exp_arg;
+    var_t first_val = get_runtime_var_val(env, node->val, lisp_any);
+    // check call-able or raise error
+    if (type_check(first_val, lisp_ptr)) {
+        allow_exp_arg = first_val.func_ptr->allow_exp_arg;
+    } else {
+        raise_not_callable_error(env, first_val);
+    }
+
+    // push into stack
+    push_stack(env, first_val);
+    node = node->next;
+
     #ifdef DEBUG
     printf("start push list\n");
     printf("allow exp arg: %d\n", allow_exp_arg);
@@ -198,9 +234,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     printf("======================\n\n");
     #endif
 
-    // * First step:
-    // * push all list into stack
-    AST_node *node = root;
+    // For all item in the list, push them into stack
     while (node != NULL) {
         #ifdef DEBUG
         printf("next_node: ");
@@ -209,33 +243,11 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
         #endif
         var_t val_to_push;
 
-        if (node->child != NULL) {
-            // if the node is a compound expression
-            if (allow_exp_arg) {
-                // just push the AST node into the stack as the argument
-                val_to_push = set_var_val(lisp_ast_ptr, {.lisp_ptr = node});
-            } else {
-                // interpret the node and push the result into  stack
-                // peek next to know should it allow_exp_arg
-                bool next_allow_expr = false;
-                if (type_check(node->child->val, lisp_ptr)) {
-                    next_allow_expr = node->child->val.func_ptr->allow_exp_arg;
-                }
-                val_to_push = interpret_ast(node->child, env, next_allow_expr);     // interpret the node
-            }
-        } else if (type_check(node->val, lisp_symbol)) {
-            // if the node is a symbol
-            if (allow_exp_arg) {
-                val_to_push = set_var_val(lisp_symbol, {.lisp_ptr = node->val.lisp_ptr});
-            } else {
-                val_to_push = ask_symbol(env, node->name);
-            }
-
-        } else {
-            // just single value
+        if (allow_exp_arg) {
             val_to_push = node->val;
+        } else {
+            val_to_push = get_runtime_var_val(env, node->val, lisp_any);
         }
-
         push_stack(env, val_to_push);
         node = node->next;
     }
@@ -263,7 +275,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
         instance->body.native_body(instance, env);   // natives should release frame inside
         result = env->result;                        // fetch result from result register in env
     } else {
-        result = interpret_ast(instance->body.ast_body, env, false);
+        result = interpret_ast(instance->body.ast_body, env);
     }
 
     //* Step 3:
@@ -293,19 +305,16 @@ void execute_main(AST_node *root, env_t *env) {
     env->func_stack.rsp += 1;
     env->func_stack.stack[env->func_stack.rsp] = global_scope;
 
-#ifdef DEBUG
-    dump_data_stack(env);
-    dump_func_stack(env);
-    printf("======================\n\n");
-#endif
-
     AST_node *exit_node = create_ast_nf_node(&LISP_NATIVE_FUNC_MAIN_EXIT_INFO, NULL);
     exit_node->next = root;
 
 #ifdef DEBUG
     graph_AST(exit_node);
+    dump_data_stack(env);
+    dump_func_stack(env);
+    printf("======================\n\n");
 #endif
 
-    interpret_ast(exit_node, env, false);
+    interpret_ast(exit_node, env);
     return;
 }

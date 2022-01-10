@@ -34,6 +34,7 @@ typedef enum TYPE_MASK {
     nil_mask     = 0x3000000000000000,
     symbol_mask  = 0x4000000000000000,
     ast_ptr_mask = 0x5000000000000000,
+    any_mask     = 0x6000000000000000,
 } type_mask;
 
 enum var_types {
@@ -43,6 +44,7 @@ enum var_types {
     lisp_nil = nil_mask,
     lisp_symbol = symbol_mask,
     lisp_ast_ptr  = ast_ptr_mask,
+    lisp_any = any_mask,
 };
 typedef union LISP_VAR_TYPE{
     int64_t _content;
