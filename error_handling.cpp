@@ -8,6 +8,8 @@ void core_dump(env_t *env) {
 }
 void trace_back(env_t *env) {
     printf("Trace Back:\n");
+    dump_data_stack(env);
+    dump_func_stack(env);
     // TODO:
     return;
 }

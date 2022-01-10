@@ -37,7 +37,7 @@ typedef enum TYPE_MASK {
 } type_mask;
 
 enum var_types {
-    lisp_ptr = ptr48_mask,
+    lisp_ptr = ptr48_mask,          //! lisp_ptr is presented for `void*` and `func_t*` at same time for time. which is not good
     lisp_int32 = int32_mask,
     lisp_bool = bool_mask,
     lisp_nil = nil_mask,
@@ -97,6 +97,7 @@ typedef struct LISP_FUNCTION_TYPE {
 } func_t;
 
 func_t *new_func(bool is_native, std::string *name, int level, int argc, id_map_t *id_map, func_t *parent, func_body_t body);
+func_t *new_empty_lambda(int scope_level);
 func_t *clone_func(func_t *);
 void free_func(func_t *);
 void evoke_func(func_t *, int argc, env_t *env);

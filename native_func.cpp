@@ -95,7 +95,9 @@ void LISP_NATIVE_FUNC_BODY_IF(func_t *self, env_t *env) {
     var_t choice = get_local_var(env, condition ? 3 : 4);   // chose if arg1 then arg2 else arg3
 
     if (type_check(choice, lisp_ast_ptr)) {
-        interpret_ast(get_ast_ptr(choice)->child, env, false);
+        AST_node *root = get_ast_ptr(choice)->child;
+        assert_type(env, lisp_ptr, root->val);
+        interpret_ast(root, env, root->val.func_ptr->allow_exp_arg);
     } else {
         env->result = choice;
     }
@@ -118,7 +120,9 @@ void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
     var_t arg2 = get_local_var(env, 3);
     var_t val;
     if (type_check(arg2, lisp_ast_ptr)) {
-        interpret_ast(get_ast_ptr(arg2)->child, env, false);
+        AST_node *root = get_ast_ptr(arg2)->child;
+        assert_type(env, lisp_ptr, root->val);
+        interpret_ast(root, env, root->val.func_ptr->allow_exp_arg);
         val = env->result;
     } else {
         val = arg2;
@@ -139,11 +143,51 @@ void LISP_NATIVE_FUNC_BODY_DEFINE(func_t *self, env_t *env) {
     env->result = set_var_val(lisp_nil, {._content = 0});
 }
 
+/**
+ * Structure:
+ * ```
+ *              arg1   arg2
+ *     Lambda -> () -> () -> () -> ...
+ *               |
+ *               a -> b -> c
+ * ```
+ * Step1: set parameters
+ *   for each item in arg1->child
+ *      new_fun.add_param(item)
+ * 
+ * Step2: set body
+ *                               arg2
+ *  new_func.body -> push_last -> () -> () -> ...
+ **/
 void LISP_NATIVE_FUNC_BODY_LAMBDA(func_t *self, env_t *env) {
     int argc_given = env->data_stack.rsp - env->data_stack.rbp - 1;
     assert_argc(env, self, argc_given);
 
-    env->result = set_var_val(lisp_nil, {._content = 0});
+    var_t arg1 = get_local_var(env, 2);
+    var_t arg2 = get_local_var(env, 3);
+    assert_type(env, lisp_ast_ptr, arg1);
+    assert_type(env, lisp_ast_ptr, arg2);
+
+    func_t *scope = self->static_parent;
+    func_t *new_func = new_empty_lambda(scope->scope_level + 1);
+
+    // set parameters
+    int arg_cnt = 1;
+    AST_node *name_node = get_ast_ptr(arg1)->child;
+    while (name_node != NULL) {
+        assert_type(env, lisp_symbol, name_node->val);
+        arg_cnt++;
+        (*new_func->id_map)[*(get_symbol_ptr(name_node->val))] = {.is_dynamic=false, .memory={.offset=arg_cnt}};
+        name_node = name_node->next;
+    }
+    new_func->argc = arg_cnt - 1;
+
+    // set body
+    AST_node *entry = create_ast_nf_node(&LISP_NATIVE_FUNC_PUSH_LAST_ARG_INFO, NULL);
+    entry->next = get_ast_ptr(arg2);
+    new_func->body.ast_body = entry;
+
+    env->result = set_var_val(lisp_ptr, {.lisp_ptr = new_func});
 }
 
 void LISP_NATIVE_FUNC_BODY_PUSH_LAST_ARG(func_t *self, env_t *env) {

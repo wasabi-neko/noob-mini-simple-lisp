@@ -1,1 +1,2 @@
-(if (= 1 1) 3 5)
+(define x (lambda (a) (+ 1 a)))
+(print-num (x 2))

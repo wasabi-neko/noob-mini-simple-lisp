@@ -84,8 +84,12 @@ void print_var_val(const var_t var) {
     case lisp_ast_ptr:
         printf("%p -> ", var.lisp_ptr);
         print_node(get_ast_ptr(var));
+        break;
     case lisp_ptr:
         printf("%p", var.lisp_ptr);
+        if (var.func_ptr != NULL && var.func_ptr->name != NULL) {
+            printf(" -> %s ", var.func_ptr->name->data());
+        }
         break;
     default:
         printf("undefine");
@@ -106,6 +110,17 @@ func_t *new_func(bool is_native, std::string *name, int level, int argc, id_map_
     func->static_parent = parent;
     func->id_map = id_map;
     func->body = body;
+    return func;
+}
+
+func_t *new_empty_lambda(int scope_level) {
+    func_t *func = (func_t*) malloc(sizeof(func_t));
+    func->is_native = false;
+    func->allow_exp_arg = false;
+    func->name = NULL;
+    func->scope_level = scope_level;
+    func->id_map = new id_map_t();
+    func->static_parent = NULL;
     return func;
 }
 

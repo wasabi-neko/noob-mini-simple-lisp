@@ -192,6 +192,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
     
     #ifdef DEBUG
     printf("start push list\n");
+    printf("allow exp arg: %d\n", allow_exp_arg);
     dump_data_stack(env);
     dump_func_stack(env);
     printf("======================\n\n");
@@ -217,7 +218,7 @@ var_t interpret_ast(AST_node *root, env_t *env, bool allow_exp_arg) {
                 // interpret the node and push the result into  stack
                 // peek next to know should it allow_exp_arg
                 bool next_allow_expr = false;
-                if (node->child->child == NULL && type_check(node->child->val, lisp_ptr)) {
+                if (type_check(node->child->val, lisp_ptr)) {
                     next_allow_expr = node->child->val.func_ptr->allow_exp_arg;
                 }
                 val_to_push = interpret_ast(node->child, env, next_allow_expr);     // interpret the node
