@@ -55,6 +55,7 @@ void print_type_str(enum var_types type) {
         break;
     case lisp_ast_ptr:
         printf("ast_ptr");
+        break;
     case lisp_ptr:
         printf("ptr");
         break;

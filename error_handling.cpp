@@ -19,18 +19,18 @@ void exit_interpreter(env_t *env) {
     exit(-1);
 }
 
-void raise_type_error(env_t *env, enum var_types type_expect, var_t the_var) {
+void raise_type_error(env_t *env, type_mask type_expect, var_t the_var) {
     trace_back(env);
-    printf("Type Error: "); print_type_str(type_expect); printf("expect, but ");
+    printf("Type Error: "); print_type_str((enum var_types)type_expect); printf(" expect, but ");
     print_var_val(the_var);
-    printf("received.\n");
+    printf(" received.\n");
     exit_interpreter(env);
 }
 
 void raise_not_callable_error(env_t *env, var_t the_var) {
     trace_back(env);
     printf("Type Error: the value "); print_var_val(the_var);
-    printf("is not called-able.\n");
+    printf(" is not called-able.\n");
     exit_interpreter(env);
 }
 
@@ -71,6 +71,6 @@ void assert_argc(env_t *env, func_t *func, int argc_given) {
 
 void assert_type(env_t *env, enum var_types type_expect, var_t the_var) {
     if (!type_check(the_var, type_expect)) {
-        raise_type_error(env, type_expect, the_var);
+        raise_type_error(env, (type_mask)type_expect, the_var);
     }
 }

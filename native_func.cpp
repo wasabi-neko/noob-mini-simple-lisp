@@ -165,27 +165,39 @@ void LISP_NATIVE_FUNC_BODY_LAMBDA(func_t *self, env_t *env) {
 
     var_t arg1 = get_local_var(env, 2);
     var_t arg2 = get_local_var(env, 3);
-    assert_type(env, lisp_ast_ptr, arg1);
-    assert_type(env, lisp_ast_ptr, arg2);
 
     func_t *scope = self->static_parent;
     func_t *new_func = new_empty_lambda(scope->scope_level + 1);
 
     // set parameters
     int arg_cnt = 1;
-    AST_node *name_node = get_ast_ptr(arg1)->child;
-    while (name_node != NULL) {
-        assert_type(env, lisp_symbol, name_node->val);
-        arg_cnt++;
-        (*new_func->id_map)[*(get_symbol_ptr(name_node->val))] = {.is_dynamic=false, .memory={.offset=arg_cnt}};
-        name_node = name_node->next;
+    if (type_check(arg1, lisp_ast_ptr)) {
+        AST_node *name_node = get_ast_ptr(arg1)->child;
+        while (name_node != NULL) {
+            assert_type(env, lisp_symbol, name_node->val);
+            arg_cnt++;
+            (*new_func->id_map)[*(get_symbol_ptr(name_node->val))] = {.is_dynamic=false, .memory={.offset=arg_cnt}};
+            name_node = name_node->next;
+        }
+    } else if (!type_check(arg1, lisp_nil)) {
+        raise_type_error(env, (type_mask)(lisp_ast_ptr | lisp_nil), arg1);
     }
     new_func->argc = arg_cnt - 1;
 
     // set body
-    AST_node *entry = create_ast_nf_node(&LISP_NATIVE_FUNC_PUSH_LAST_ARG_INFO, NULL);
-    entry->next = get_ast_ptr(arg2);
-    new_func->body.ast_body = entry;
+    AST_node *body_root = create_ast_nf_node(&LISP_NATIVE_FUNC_PUSH_LAST_ARG_INFO, NULL);
+    AST_node *entry;
+
+    // lambda body can be compound expression or single value
+    if (type_check(arg2, lisp_ast_ptr)) {
+        entry = get_ast_ptr(arg2);
+    } else if (type_check(arg2, lisp_int32) || type_check(arg2, lisp_bool)) {
+        entry = new_ast_node(NULL, arg2);
+    } else {
+        raise_type_error(env, (type_mask)(lisp_ast_ptr | lisp_int32 | lisp_bool), arg2);  // TODO: multi type
+    }
+    body_root->next = entry;
+    new_func->body.ast_body = body_root;
 
     env->result = set_var_val(lisp_ptr, {.lisp_ptr = new_func});
 }
